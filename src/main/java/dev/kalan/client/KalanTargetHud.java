@@ -74,8 +74,8 @@ public final class KalanTargetHud {
         KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
         if (element == null || !element.isVisible()) return;
 
-        final int width = 150;
-        final int height = 64;
+        final int width = 120;
+        final int height = 65;
         element.setSize(width, height);
         element.clampToScreen(context.getScaledWindowWidth(), context.getScaledWindowHeight());
         float opacity = element.getOpacity();
@@ -86,12 +86,14 @@ public final class KalanTargetHud {
 
         drawRoundedPanel(context, 0, 0, width, height, 8, withOpacity(OUTLINE, opacity));
         drawRoundedPanel(context, 1, 1, width - 2, height - 2, 7, withOpacity(BACKGROUND, opacity));
-        drawTargetHead(context, displayedTarget, 8, 8, opacity);
+        context.drawTextWithShadow(client.textRenderer, "◈  Target HUD", 8, 4,
+                withOpacity(ACCENT, opacity));
+        drawTargetHead(context, displayedTarget, 8, 22, opacity);
 
-        String name = trimText(client, displayedTarget.getName().getString(), 84);
-        context.drawTextWithShadow(client.textRenderer, name, 47, 10, withOpacity(WHITE, opacity));
+        String name = trimText(client, displayedTarget.getName().getString(), 65);
+        context.drawTextWithShadow(client.textRenderer, name, 47, 23, withOpacity(WHITE, opacity));
         if (preview) {
-            context.drawTextWithShadow(client.textRenderer, "PREVIEW", 47, 23,
+            context.drawTextWithShadow(client.textRenderer, "PREVIEW", 47, 34,
                     withOpacity(ACCENT, opacity));
         }
 
@@ -99,22 +101,22 @@ public final class KalanTargetHud {
         float maxHealth = Math.max(1.0f, displayedTarget.getMaxHealth());
         float healthRatio = Math.min(1.0f, health / maxHealth);
         String healthText = String.format(java.util.Locale.ROOT, "%.1f HP", health);
-        context.drawTextWithShadow(client.textRenderer, healthText, 47, preview ? 34 : 27,
+        context.drawTextWithShadow(client.textRenderer, healthText, 47, preview ? 42 : 38,
                 withOpacity(MUTED, opacity));
 
-        int barY = 45;
-        context.fill(47, barY, 140, barY + 5, withOpacity(DIVIDER, opacity));
+        int barY = 51;
+        context.fill(47, barY, 112, barY + 5, withOpacity(DIVIDER, opacity));
         if (healthRatio > 0.0f) {
             int healthColor = healthRatio > 0.5f ? 0xFF78D69A
                     : healthRatio > 0.25f ? 0xFFFFD18A : 0xFFFF8297;
-            context.fill(47, barY, 47 + Math.round(93 * healthRatio), barY + 5,
+            context.fill(47, barY, 47 + Math.round(65 * healthRatio), barY + 5,
                     withOpacity(healthColor, opacity));
         }
 
         float timeLeft = preview ? 1.0f
                 : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
-        context.fill(8, 58, width - 8, 60, withOpacity(DIVIDER, opacity));
-        context.fill(8, 58, 8 + Math.round((width - 16) * timeLeft), 60,
+        context.fill(8, 61, width - 8, 63, withOpacity(DIVIDER, opacity));
+        context.fill(8, 61, 8 + Math.round((width - 16) * timeLeft), 63,
                 withOpacity(ACCENT, opacity));
         context.getMatrices().pop();
     }
