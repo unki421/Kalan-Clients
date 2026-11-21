@@ -1,6 +1,11 @@
 name: Build Kalan Client
 
 on:
+  push:
+    branches:
+      - main
+      - feature/target-hud
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -8,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    name: Manual Build
+    name: Build
     runs-on: ubuntu-latest
 
     steps:

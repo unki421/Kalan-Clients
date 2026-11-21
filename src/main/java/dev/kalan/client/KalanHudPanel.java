@@ -9,6 +9,7 @@ public enum KalanHudPanel {
     MOUSE("Mouse", "ЛКМ и ПКМ"),
     POTIONS("Potions", "Активные эффекты зелий"),
     ARMOR("Armor", "Надетая броня и её прочность"),
+    TARGET_HUD("Target HUD", "Информация о последнем атакованном противнике"),
     ARRAY_LIST("ArrayList", "Список включённых HUD-панелей");
 
     private final String title;
