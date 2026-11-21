@@ -10,42 +10,25 @@ public final class KalanClickGuiEntries {
             new ArrayList<>();
 
     static {
-        register(new KalanClickGuiEntry(
-                "Watermark",
-                "Название клиента, ник, FPS, ping и время",
-                KalanHudPanel.WATERMARK
-        ));
-
-        register(new KalanClickGuiEntry(
-                "Coordinates",
-                "Координаты XYZ и направление взгляда",
-                KalanHudPanel.COORDINATES
-        ));
-
-        register(new KalanClickGuiEntry(
-                "Keystrokes",
-                "Клавиши WASD и прыжок",
-                KalanHudPanel.KEYSTROKES
-        ));
-
-        register(new KalanClickGuiEntry(
-                "Mouse",
-                "Отображение нажатий ЛКМ и ПКМ",
-                KalanHudPanel.MOUSE
-        ));
-
-        register(new KalanClickGuiEntry(
-                "Potions",
-                "Активные эффекты и оставшееся время",
-                KalanHudPanel.POTIONS
-        ));
+        register(KalanHudPanel.WATERMARK);
+        register(KalanHudPanel.COORDINATES);
+        register(KalanHudPanel.KEYSTROKES);
+        register(KalanHudPanel.MOUSE);
+        register(KalanHudPanel.POTIONS);
+        register(KalanHudPanel.ARMOR);
+        register(KalanHudPanel.PLAYER_STATUS);
+        register(KalanHudPanel.ARRAY_LIST);
     }
 
     private KalanClickGuiEntries() {
     }
 
-    private static void register(KalanClickGuiEntry entry) {
-        ENTRIES.add(entry);
+    private static void register(KalanHudPanel panel) {
+        ENTRIES.add(new KalanClickGuiEntry(
+                panel.getTitle(),
+                panel.getDescription(),
+                panel
+        ));
     }
 
     public static List<KalanClickGuiEntry> getAll() {
