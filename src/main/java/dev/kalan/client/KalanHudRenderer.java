@@ -75,7 +75,6 @@ public final class KalanHudRenderer {
         renderKeystrokes(client, context);
         renderPotions(client, context);
         renderArmor(client, context);
-        renderTargetHud(client, context);
         renderArrayList(client, context);
     }
 
@@ -393,65 +392,6 @@ public final class KalanHudRenderer {
                 }
             }
         }
-
-        context.getMatrices().pop();
-    }
-
-    private static void renderTargetHud(MinecraftClient client, DrawContext context) {
-        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
-        if (element == null || !element.isVisible()) {
-            return;
-        }
-
-        LivingEntity target = null;
-        if (client.targetedEntity instanceof LivingEntity living) {
-            target = living;
-        } else if (client.player.getAttacking() instanceof LivingEntity attacking) {
-            target = attacking;
-        }
-
-        if (target == null) {
-            return;
-        }
-
-        String name = target.getName().getString();
-        float hp = Math.max(0.0f, target.getHealth());
-        String hpText = String.format("%.1f HP", hp);
-
-        int width = Math.max(124, client.textRenderer.getWidth(name) + 52);
-        int height = 50;
-
-        prepareElement(element, context, width, height);
-        float opacity = element.getOpacity();
-
-        context.getMatrices().push();
-        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
-        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
-
-        drawCard(context, 0, 0, width, height, 9, opacity);
-        context.drawTextWithShadow(client.textRenderer, "⚔", 8, 5, withOpacity(ACCENT, opacity));
-        context.drawTextWithShadow(client.textRenderer, "Target HUD", 19, 5, withOpacity(WHITE, opacity));
-
-        // Аватар / голова цели слева
-        drawRoundedPanel(context, 8, 17, 25, 25, 4, withOpacity(KEY_BG, opacity));
-        if (target instanceof AbstractClientPlayerEntity playerTarget) {
-            PlayerSkinDrawer.draw(context, playerTarget.getSkinTextures(), 9, 18, 23);
-        } else {
-            String initial = name.isEmpty() ? "?" : name.substring(0, 1).toUpperCase();
-            int iw = client.textRenderer.getWidth(initial);
-            context.drawTextWithShadow(client.textRenderer, initial, 8 + (25 - iw) / 2, 26,
-                    withOpacity(ACCENT, opacity));
-        }
-
-        context.drawTextWithShadow(client.textRenderer, name, 38, 18, withOpacity(WHITE, opacity));
-        context.drawTextWithShadow(client.textRenderer, hpText, 38, 29, withOpacity(MUTED, opacity));
-
-        float maxHp = Math.max(1.0f, target.getMaxHealth());
-        float ratio = Math.max(0.0f, Math.min(1.0f, hp / maxHp));
-        int barW = width - 46;
-        roundedBar(context, 38, 39, barW, 4, withOpacity(DIVIDER, opacity));
-        roundedBar(context, 38, 39, Math.max(4, Math.round(barW * ratio)), 4,
-                withOpacity(ACCENT_FILL, opacity));
 
         context.getMatrices().pop();
     }
