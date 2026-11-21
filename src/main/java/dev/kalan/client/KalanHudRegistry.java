@@ -11,10 +11,10 @@ public final class KalanHudRegistry {
     static {
         register(new KalanHudElement(KalanHudPanel.WATERMARK, 6, 6));
         register(new KalanHudElement(KalanHudPanel.INFO, 6, 24));
-        register(new KalanHudElement(KalanHudPanel.COORDINATES, 6, 42));
-        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 6, 64));
-        register(new KalanHudElement(KalanHudPanel.MOUSE, 6, 106));
-        register(new KalanHudElement(KalanHudPanel.POTIONS, 6, 142));
+        register(new KalanHudElement(KalanHudPanel.COORDINATES, 6, 66));
+        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 6, 110));
+        register(new KalanHudElement(KalanHudPanel.MOUSE, 6, 178));
+        register(new KalanHudElement(KalanHudPanel.POTIONS, 6, 216));
     }
 
     private KalanHudRegistry() {

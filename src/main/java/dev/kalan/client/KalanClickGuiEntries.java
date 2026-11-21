@@ -18,25 +18,25 @@ public final class KalanClickGuiEntries {
 
         register(new KalanClickGuiEntry(
                 "Coordinates",
-                "Координаты игрока",
+                "Координаты XYZ и направление взгляда",
                 KalanHudPanel.COORDINATES
         ));
 
         register(new KalanClickGuiEntry(
                 "Keystrokes",
-                "Отображение клавиш WASD",
+                "Клавиши WASD и прыжок",
                 KalanHudPanel.KEYSTROKES
         ));
 
         register(new KalanClickGuiEntry(
                 "Mouse",
-                "Отображение нажатий мыши",
+                "Отображение нажатий ЛКМ и ПКМ",
                 KalanHudPanel.MOUSE
         ));
 
         register(new KalanClickGuiEntry(
                 "Potions",
-                "Активные эффекты",
+                "Активные эффекты и оставшееся время",
                 KalanHudPanel.POTIONS
         ));
     }
