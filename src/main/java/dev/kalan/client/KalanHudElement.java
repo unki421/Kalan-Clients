@@ -27,6 +27,30 @@ public final class KalanHudElement {
         return settings;
     }
 
+    public boolean isVisible() {
+        return settings.isVisible();
+    }
+
+    public void setVisible(boolean visible) {
+        settings.setVisible(visible);
+    }
+
+    public float getScale() {
+        return settings.getScale();
+    }
+
+    public void setScale(float scale) {
+        settings.setScale(scale);
+    }
+
+    public float getOpacity() {
+        return settings.getOpacity();
+    }
+
+    public void setOpacity(float opacity) {
+        settings.setOpacity(opacity);
+    }
+
     public int getX() {
         return x;
     }
@@ -37,6 +61,14 @@ public final class KalanHudElement {
 
     public void setPosition(int x, int y) {
         this.x = x;
+        this.y = y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
         this.y = y;
     }
 }
