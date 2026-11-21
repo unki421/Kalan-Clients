@@ -325,8 +325,8 @@ public final class KalanHudRenderer {
             return;
         }
 
-        int width = 112;
-        int height = 48;
+        int width = 132;
+        int height = 54;
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
