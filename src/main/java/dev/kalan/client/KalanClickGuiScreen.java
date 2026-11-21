@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class KalanClickGuiScreen extends Screen {
-    private static final int W = 980, H = 600;
+    private static final int W = 560, H = 340;
     private static final int OVERLAY = 0x9906030D;
     private static final int PANEL = 0xF50B0814;
     private static final int SIDEBAR = 0xFF100B1B;
@@ -31,8 +31,8 @@ public final class KalanClickGuiScreen extends Screen {
 
     public KalanClickGuiScreen() { super(Text.literal("Kalan Client")); }
 
-    private int px() { return Math.min(W, Math.max(320, width - 28)); }
-    private int py() { return Math.min(H, Math.max(260, height - 28)); }
+    private int px() { return Math.min(W, Math.max(320, width - 20)); }
+    private int py() { return Math.min(H, Math.max(250, height - 20)); }
     private int left() { return (width - px()) / 2; }
     private int top() { return (height - py()) / 2; }
     private int side() { return Math.max(78, Math.min(94, px() / 9)); }
@@ -104,8 +104,8 @@ public final class KalanClickGuiScreen extends Screen {
     private void renderCards(DrawContext c,int x,int y,int cw,int h,int mouseX,int mouseY) {
         List<KalanClickGuiEntry> entries=visibleEntries();
         if(entries.isEmpty()) { txt(c,"Ничего не найдено",x+20,y+112,MUTED); return; }
-        int gap=13, cols=cw>=570?3:cw>=370?2:1;
-        int cardW=(cw-gap*(cols-1))/cols, cardH=116, start=y+132;
+        int gap=8, cols=cw>=360?3:cw>=240?2:1;
+        int cardW=(cw-gap*(cols-1))/cols, cardH=62, start=y+113;
         int bottom=y+h-39;
         for(int i=0;i<entries.size();i++) {
             int col=i%cols,row=i/cols;
@@ -114,18 +114,18 @@ public final class KalanClickGuiScreen extends Screen {
             KalanClickGuiEntry e=entries.get(i);
             boolean on=e.isEnabled();
             boolean hover=KalanClickGuiLayout.contains(mouseX,mouseY,ax,ay,cardW,cardH);
-            rounded(c,ax,ay,cardW,cardH,14,hover?PURPLE_LIGHT:0xFF624080);
-            rounded(c,ax+1,ay+1,cardW-2,cardH-2,13,CARD);
-            rounded(c,ax+9,ay+9,cardW-18,39,10,CARD_TOP);
+            rounded(c,ax,ay,cardW,cardH,12,hover?PURPLE_LIGHT:0xFF7545A8);
+            rounded(c,ax+1,ay+1,cardW-2,cardH-2,11,CARD);
+            rounded(c,ax+5,ay+5,cardW-10,25,8,CARD_TOP);
             String title=trim(e.getTitle(),cardW-42);
-            txt(c,title,ax+18,ay+21,WHITE);
+            txt(c,title,ax+(cardW-textW(title))/2,ay+13,WHITE);
             String description=trim(e.getDescription(),cardW-28);
-            txt(c,description,ax+12,ay+58,MUTED);
-            c.fill(ax+12,ay+82,ax+cardW-12,ay+83,LINE);
-            txt(c,on?"ВКЛЮЧЕНО":"ВЫКЛЮЧЕНО",ax+13,ay+94,on?PURPLE_LIGHT:MUTED);
-            rounded(c,ax+cardW-69,ay+91,49,19,10,on?PURPLE:0xFF393342);
-            rounded(c,ax+cardW-(on?43:66),ay+94,13,13,8,0xFFFFFFFF);
-            txt(c,"⚙",ax+cardW-20,ay+94,PURPLE_LIGHT);
+            txt(c,description,ax+8,ay+34,MUTED);
+            c.fill(ax+8,ay+44,ax+cardW-8,ay+45,LINE);
+            txt(c,on?"ВКЛ":"ВЫКЛ",ax+8,ay+49,on?PURPLE_LIGHT:MUTED);
+            rounded(c,ax+cardW-43,ay+47,25,11,7,on?PURPLE:0xFF393342);
+            rounded(c,ax+cardW-(on?29:41),ay+49,7,7,5,0xFFFFFFFF);
+            txt(c,"☷",ax+cardW-14,ay+49,PURPLE_LIGHT);
             if(hover) rounded(c,ax+1,ay+1,cardW-2,2,1,PURPLE_LIGHT);
         }
         int rows=(entries.size()+cols-1)/cols;
@@ -206,13 +206,13 @@ public final class KalanClickGuiScreen extends Screen {
             return true;
         }
         List<KalanClickGuiEntry> entries=visibleEntries();
-        int gap=13,cols=cw>=570?3:cw>=370?2:1,cardW=(cw-gap*(cols-1))/cols,cardH=116,start=y+132;
+        int gap=8,cols=cw>=360?3:cw>=240?2:1,cardW=(cw-gap*(cols-1))/cols,cardH=62,start=y+113;
         for(int n=0;n<entries.size();n++) {
             int ax=cx+(n%cols)*(cardW+gap),ay=start+(n/cols)*(cardH+gap)-scroll;
             if(!KalanClickGuiLayout.contains((int)mx,(int)my,ax,ay,cardW,cardH))continue;
             KalanClickGuiEntry e=entries.get(n);
-            if(button==1||(button==0&&mx>=ax+cardW-42&&my>=ay+86)){selected=e;return true;}
-            if(button==0&&mx>=ax+cardW-75&&my>=ay+86){selected=e;return true;}
+            if(button==1||(button==0&&mx>=ax+cardW-18&&my>=ay+43)){selected=e;return true;}
+            if(button==0&&mx>=ax+cardW-48&&my>=ay+43){selected=e;return true;}
             if(button==0){e.toggle();return true;}
         }
         return super.mouseClicked(mx,my,button);
