@@ -2,8 +2,8 @@ package dev.kalan.client;
 
 public enum KalanHudPanel {
 
-    WATERMARK("Watermark", "Название клиента"),
-    INFO("Info", "FPS, ping и время"),
+    WATERMARK("Watermark", "Название клиента, ник, FPS, ping и время"),
+    INFO("Info", "Дополнительная информация"),
     COORDINATES("Coordinates", "Координаты игрока"),
     KEYSTROKES("Keystrokes", "Клавиши WASD"),
     MOUSE("Mouse", "ЛКМ и ПКМ"),
