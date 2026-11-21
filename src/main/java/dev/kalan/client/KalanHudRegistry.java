@@ -9,10 +9,12 @@ public final class KalanHudRegistry {
     private static final List<KalanHudElement> ELEMENTS = new ArrayList<>();
 
     static {
-        register(new KalanHudElement("fps", 6, 6));
-        register(new KalanHudElement("coordinates", 6, 22));
-        register(new KalanHudElement("keystrokes", 6, 40));
-        register(new KalanHudElement("cps", 6, 82));
+        register(new KalanHudElement(KalanHudPanel.WATERMARK, 6, 6));
+        register(new KalanHudElement(KalanHudPanel.INFO, 6, 24));
+        register(new KalanHudElement(KalanHudPanel.COORDINATES, 6, 42));
+        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 6, 64));
+        register(new KalanHudElement(KalanHudPanel.MOUSE, 6, 106));
+        register(new KalanHudElement(KalanHudPanel.POTIONS, 6, 142));
     }
 
     private KalanHudRegistry() {
@@ -44,6 +46,27 @@ public final class KalanHudRegistry {
         }
 
         return null;
+    }
+
+    public static KalanHudElement find(KalanHudPanel panel) {
+        return panel == null ? null : find(panel.getId());
+    }
+
+    public static boolean setVisible(String id, boolean visible) {
+        KalanHudElement element = find(id);
+
+        if (element == null) {
+            return false;
+        }
+
+        element.setVisible(visible);
+        return true;
+    }
+
+    public static void setAllVisible(boolean visible) {
+        for (KalanHudElement element : ELEMENTS) {
+            element.setVisible(visible);
+        }
     }
 
     public static List<KalanHudElement> getAll() {
