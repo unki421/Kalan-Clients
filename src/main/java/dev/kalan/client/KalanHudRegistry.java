@@ -9,18 +9,19 @@ public final class KalanHudRegistry {
     private static final List<KalanHudElement> ELEMENTS = new ArrayList<>();
 
     static {
-        register(new KalanHudElement(KalanHudPanel.WATERMARK, 6, 6));
-        register(new KalanHudElement(KalanHudPanel.INFO, 6, 24));
-        register(new KalanHudElement(KalanHudPanel.COORDINATES, 6, 66));
-        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 6, 110));
-        register(new KalanHudElement(KalanHudPanel.MOUSE, 6, 178));
-        register(new KalanHudElement(KalanHudPanel.POTIONS, 6, 216));
-        register(new KalanHudElement(KalanHudPanel.ARMOR, 170, 216));
-        register(new KalanHudElement(KalanHudPanel.TARGET_HUD, 6, 270));
-        register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 500, 6));
+        // Default layout follows the supplied Figma reference.
+        // Positions are clamped to the active scaled resolution during rendering.
+        register(new KalanHudElement(KalanHudPanel.WATERMARK, 10, 10));
+        register(new KalanHudElement(KalanHudPanel.INFO, 10, 75));
+        register(new KalanHudElement(KalanHudPanel.COORDINATES, 10, 88));
+        register(new KalanHudElement(KalanHudPanel.POTIONS, 10, 145));
+        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 900, 10));
+        register(new KalanHudElement(KalanHudPanel.MOUSE, 900, 104));
+        register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 850, 147));
+        register(new KalanHudElement(KalanHudPanel.TARGET_HUD, 850, 382));
+        register(new KalanHudElement(KalanHudPanel.ARMOR, 875, 472));
         find(KalanHudPanel.INFO).setVisible(false);
     }
-
     private KalanHudRegistry() {
     }
 
