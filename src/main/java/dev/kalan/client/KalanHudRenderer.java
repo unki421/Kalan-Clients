@@ -8,7 +8,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -241,12 +240,8 @@ public final class KalanHudRenderer {
             return;
         }
 
-        boolean leftPressed = GLFW.glfwGetMouseButton(
-                client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_LEFT
-        ) == GLFW.GLFW_PRESS;
-        boolean rightPressed = GLFW.glfwGetMouseButton(
-                client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_RIGHT
-        ) == GLFW.GLFW_PRESS;
+        boolean leftPressed = client.options.attackKey.isPressed();
+        boolean rightPressed = client.options.useKey.isPressed();
 
         int width = 96;
         int height = 31;
