@@ -1,0 +1,329 @@
+
+package dev.kalan.client;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
+
+public final class KalanClickGuiScreen extends Screen {
+
+    private static final int WIDTH = 520;
+    private static final int HEIGHT = 330;
+
+    private KalanClickGuiCategory category = KalanClickGuiCategory.HUD;
+    private KalanClickGuiEntry selected;
+
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
+    public KalanClickGuiScreen() {
+        super(Text.literal("Kalan Client"));
+    }
+
+    private int left() {
+        return (width - WIDTH) / 2;
+    }
+
+    private int top() {
+        return (height - HEIGHT) / 2;
+    }
+
+    private void text(DrawContext context, String value,
+                      int x, int y, int color) {
+        context.drawTextWithShadow(
+                client.textRenderer,
+                value,
+                x,
+                y,
+                color
+        );
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX,
+                       int mouseY, float delta) {
+
+        context.fill(0, 0, width, height, 0x99000000);
+
+        int x = left();
+        int y = top();
+
+        context.fill(x, y, x + WIDTH, y + HEIGHT, 0xFF0B0A10);
+        context.fill(x, y, x + WIDTH, y + 3, 0xFFB46CFF);
+
+        context.fill(x, y + 3, x + 120, y + HEIGHT, 0xFF111019);
+
+        text(context, "KALAN", x + 18, y + 17, 0xFFB46CFF);
+        text(context, "CLIENT", x + 65, y + 17, 0xFFF4F0FA);
+
+        text(context, "Right Shift", x + 18, y + 36, 0xFFAAA3B8);
+
+        context.fill(x + 120, y + 3, x + WIDTH, y + 44, 0xFF15131D);
+
+        text(context, category.getTitle(),
+                x + 140, y + 18, 0xFFF4F0FA);
+
+        text(context, "X", x + WIDTH - 25, y + 17, 0xFFFF8B9B);
+
+        renderCategories(context, x, y);
+
+        if (selected != null) {
+            renderSettings(context, x, y);
+        } else {
+            renderEntries(context, x, y);
+        }
+
+        text(context, "Kalan Client | Fabric 1.21.4",
+                x + 15, y + HEIGHT - 18, 0xFF777080);
+
+        super.render(context, mouseX, mouseY, delta);
+    }
+
+    private void renderCategories(DrawContext context, int x, int y) {
+        int index = 0;
+
+        for (KalanClickGuiCategory item : KalanClickGuiCategory.values()) {
+            int buttonY = y + 65 + index * 38;
+
+            boolean active = category == item;
+
+            context.fill(
+                    x + 10,
+                    buttonY - 5,
+                    x + 110,
+                    buttonY + 23,
+                    active ? 0xFF30203F : 0xFF111019
+            );
+
+            if (active) {
+                context.fill(
+                        x + 10,
+                        buttonY - 5,
+                        x + 13,
+                        buttonY + 23,
+                        0xFFB46CFF
+                );
+            }
+
+            text(
+                    context,
+                    item.getTitle(),
+                    x + 20,
+                    buttonY + 4,
+                    active ? 0xFFB46CFF : 0xFFAAA3B8
+            );
+
+            index++;
+        }
+    }
+
+    private void renderEntries(DrawContext context, int x, int y) {
+        if (category != KalanClickGuiCategory.HUD) {
+            text(
+                    context,
+                    "В этом разделе пока нет элементов",
+                    x + 145,
+                    y + 100,
+                    0xFFAAA3B8
+            );
+            return;
+        }
+
+        int index = 0;
+
+        for (KalanClickGuiEntry entry : KalanClickGuiEntries.getAll()) {
+            int column = index % 2;
+            int row = index / 2;
+
+            int entryX = x + 140 + column * 175;
+            int entryY = y + 65 + row * 65;
+
+            boolean enabled = entry.isEnabled();
+
+            context.fill(
+                    entryX,
+                    entryY,
+                    entryX + 160,
+                    entryY + 52,
+                    0xFF191622
+            );
+
+            context.fill(
+                    entryX,
+                    entryY,
+                    entryX + 160,
+                    entryY + 1,
+                    enabled ? 0xFFB46CFF : 0xFF30283F
+            );
+
+            text(
+                    context,
+                    entry.getTitle(),
+                    entryX + 9,
+                    entryY + 9,
+                    0xFFF4F0FA
+            );
+
+            text(
+                    context,
+                    enabled ? "ON" : "OFF",
+                    entryX + 9,
+                    entryY + 29,
+                    enabled ? 0xFFB46CFF : 0xFF777080
+            );
+
+            text(
+                    context,
+                    "ПКМ: настройки",
+                    entryX + 70,
+                    entryY + 29,
+                    0xFFAAA3B8
+            );
+
+            index++;
+        }
+    }
+
+    private void renderSettings(DrawContext context, int x, int y) {
+        KalanHudElement element =
+                KalanHudRegistry.find(selected.getPanel());
+
+        if (element == null) {
+            selected = null;
+            return;
+        }
+
+        text(context, selected.getTitle(),
+                x + 145, y + 70, 0xFFB46CFF);
+
+        text(context, "Масштаб: " +
+                String.format("%.1f", element.getScale()),
+                x + 145, y + 105, 0xFFF4F0FA);
+
+        text(context, "[-] уменьшить       [+] увеличить",
+                x + 145, y + 125, 0xFFAAA3B8);
+
+        text(context, "Прозрачность: " +
+                String.format("%.1f", element.getOpacity()),
+                x + 145, y + 165, 0xFFF4F0FA);
+
+        text(context, "[-] уменьшить       [+] увеличить",
+                x + 145, y + 185, 0xFFAAA3B8);
+
+        text(context, "Нажми ESC или ПКМ вне настроек, чтобы вернуться",
+                x + 145, y + 230, 0xFFAAA3B8);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int x = left();
+        int y = top();
+
+        if (button == 0 &&
+                KalanClickGuiLayout.contains(
+                        (int) mouseX, (int) mouseY,
+                        x + WIDTH - 35, y + 5, 30, 30)) {
+            close();
+            return true;
+        }
+
+        int categoryIndex = 0;
+
+        for (KalanClickGuiCategory item : KalanClickGuiCategory.values()) {
+            int buttonY = y + 60 + categoryIndex * 38;
+
+            if (KalanClickGuiLayout.contains(
+                    (int) mouseX, (int) mouseY,
+                    x + 10, buttonY, 100, 28)) {
+
+                category = item;
+                selected = null;
+                return true;
+            }
+
+            categoryIndex++;
+        }
+
+        if (selected != null) {
+            if (button == 1) {
+                selected = null;
+                return true;
+            }
+
+            if (button == 0) {
+                changeSetting(mouseX, mouseY, x, y);
+                return true;
+            }
+
+            return true;
+        }
+
+        if (category == KalanClickGuiCategory.HUD) {
+            int index = 0;
+
+            for (KalanClickGuiEntry entry : KalanClickGuiEntries.getAll()) {
+                int column = index % 2;
+                int row = index / 2;
+
+                int entryX = x + 140 + column * 175;
+                int entryY = y + 65 + row * 65;
+
+                if (KalanClickGuiLayout.contains(
+                        (int) mouseX, (int) mouseY,
+                        entryX, entryY, 160, 52)) {
+
+                    if (button == 0) {
+                        entry.toggle();
+                    } else if (button == 1) {
+                        selected = entry;
+                    }
+
+                    return true;
+                }
+
+                index++;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void changeSetting(double mouseX, double mouseY,
+                               int x, int y) {
+        KalanHudElement element =
+                KalanHudRegistry.find(selected.getPanel());
+
+        if (element == null) {
+            return;
+        }
+
+        if (mouseY >= y + 115 && mouseY <= y + 150) {
+            if (mouseX < x + 260) {
+                element.setScale(element.getScale() - 0.1f);
+            } else {
+                element.setScale(element.getScale() + 0.1f);
+            }
+        }
+
+        if (mouseY >= y + 175 && mouseY <= y + 210) {
+            if (mouseX < x + 260) {
+                element.setOpacity(element.getOpacity() - 0.1f);
+            } else {
+                element.setOpacity(element.getOpacity() + 0.1f);
+            }
+        }
+
+        KalanHudLayoutStore.save();
+    }
+
+    @Override
+    public void close() {
+        selected = null;
+        client.setScreen(null);
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+}
