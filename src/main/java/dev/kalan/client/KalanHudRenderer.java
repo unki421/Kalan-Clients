@@ -1,5 +1,9 @@
 package dev.kalan.client;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.minecraft.client.MinecraftClient;
@@ -7,14 +11,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class KalanHudRenderer {
 
@@ -22,7 +22,7 @@ public final class KalanHudRenderer {
             Identifier.of(KalanClient.MOD_ID, "watermark_hud");
 
     private static final DateTimeFormatter CLOCK_FORMAT =
-            DateTimeFormatter.ofPattern("HH:mm:ss");
+            DateTimeFormatter.ofPattern("HH:mm");
 
     private static final int ACCENT = 0xFF9B62F5;
     private static final int BACKGROUND = 0xF20B0714;
@@ -65,11 +65,13 @@ public final class KalanHudRenderer {
         }
 
         renderWatermark(client, context);
+        renderInfo(client, context);
         renderCoordinates(client, context);
         renderKeystrokes(client, context);
         renderMouse(client, context);
         renderPotions(client, context);
         renderArmor(client, context);
+        renderTargetHud(client, context);
         renderArrayList(client, context);
     }
 
@@ -84,16 +86,25 @@ public final class KalanHudRenderer {
             username = client.player.getName().getString();
         }
 
-        String fpsText = "FPS " + client.getCurrentFps();
-        String pingText = "PING " + getPingText(client);
-        String timeText = "TIME " + LocalTime.now().format(CLOCK_FORMAT);
-        String playerText = "PLAYER: " + username;
-        String metricsText = fpsText + "    " + pingText + "    " + timeText;
+        String playerLine = "Player: " + username;
+        String fpsText = "FPS: " + client.getCurrentFps();
+        String pingText = "Ping: " + getPingText(client);
+        String timeText = "Time: " + LocalTime.now().format(CLOCK_FORMAT);
 
-        int brandWidth = Math.max(164, client.textRenderer.getWidth(playerText) + 60);
-        int metricsWidth = client.textRenderer.getWidth(metricsText) + 28;
-        int width = Math.max(brandWidth, metricsWidth);
-        int height = 62;
+        int topWidth = Math.max(
+                148,
+                Math.max(
+                        client.textRenderer.getWidth("Kalan Client") + 38,
+                        client.textRenderer.getWidth(playerLine) + 38
+                )
+        );
+
+        int fpsW = client.textRenderer.getWidth(fpsText) + 12;
+        int pingW = client.textRenderer.getWidth(pingText) + 12;
+        int timeW = client.textRenderer.getWidth(timeText) + 12;
+        int rowWidth = fpsW + pingW + timeW + 10;
+        int width = Math.max(topWidth, rowWidth);
+        int height = 56;
 
         prepareElement(element, context, width, height);
         float opacity = element.getOpacity();
@@ -102,19 +113,63 @@ public final class KalanHudRenderer {
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        drawRoundedPanel(context, 0, 0, brandWidth, 36, 8, withOpacity(OUTLINE, opacity));
-        drawRoundedPanel(context, 1, 1, brandWidth - 2, 34, 7, withOpacity(BACKGROUND, opacity));
-        context.drawTextWithShadow(client.textRenderer, "◢", 10, 7, withOpacity(ACCENT, opacity));
-        context.drawTextWithShadow(client.textRenderer, "Kalan Client", 31, 5, withOpacity(WHITE, opacity));
-        context.drawTextWithShadow(client.textRenderer, playerText, 31, 19, withOpacity(MUTED, opacity));
+        drawRoundedPanel(context, 0, 0, topWidth, 32, 8, withOpacity(OUTLINE, opacity));
+        drawRoundedPanel(context, 1, 1, topWidth - 2, 30, 7, withOpacity(BACKGROUND, opacity));
+        context.drawTextWithShadow(client.textRenderer, "◢", 9, 10, withOpacity(ACCENT, opacity));
+        context.drawTextWithShadow(client.textRenderer, "Kalan Client", 26, 6, withOpacity(WHITE, opacity));
+        context.drawTextWithShadow(client.textRenderer, playerLine, 26, 18, withOpacity(MUTED, opacity));
 
-        drawRoundedPanel(context, 0, 41, metricsWidth, 29, 7, withOpacity(OUTLINE, opacity));
-        drawRoundedPanel(context, 1, 42, metricsWidth - 2, 27, 6, withOpacity(BACKGROUND, opacity));
-        context.drawTextWithShadow(client.textRenderer, fpsText, 10, 51, withOpacity(WHITE, opacity));
-        int pingX = 10 + client.textRenderer.getWidth(fpsText) + 20;
-        context.drawTextWithShadow(client.textRenderer, pingText, pingX, 51, withOpacity(MUTED, opacity));
-        int timeX = pingX + client.textRenderer.getWidth(pingText) + 20;
-        context.drawTextWithShadow(client.textRenderer, timeText, timeX, 51, withOpacity(WHITE, opacity));
+        int pillY = 36;
+        int pillH = 18;
+        drawMiniPill(context, client, 0, pillY, fpsW, pillH, fpsText, WHITE, opacity);
+        drawMiniPill(context, client, fpsW + 5, pillY, pingW, pillH, pingText, MUTED, opacity);
+        drawMiniPill(context, client, fpsW + pingW + 10, pillY, timeW, pillH, timeText, WHITE, opacity);
+
+        context.getMatrices().pop();
+    }
+
+    private static void drawMiniPill(
+            DrawContext context,
+            MinecraftClient client,
+            int x,
+            int y,
+            int w,
+            int h,
+            String text,
+            int color,
+            float opacity
+    ) {
+        drawRoundedPanel(context, x, y, w, h, 6, withOpacity(OUTLINE, opacity));
+        drawRoundedPanel(context, x + 1, y + 1, w - 2, h - 2, 5, withOpacity(BACKGROUND, opacity));
+        context.drawTextWithShadow(client.textRenderer, text, x + 6, y + 5, withOpacity(color, opacity));
+    }
+
+    private static void renderInfo(MinecraftClient client, DrawContext context) {
+        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.INFO);
+        if (element == null || !element.isVisible()) {
+            return;
+        }
+
+        String line1 = "HP: " + Math.round(client.player.getHealth())
+                + " / " + Math.round(client.player.getMaxHealth());
+        String line2 = "Food: " + client.player.getHungerManager().getFoodLevel();
+
+        int width = Math.max(110, Math.max(
+                client.textRenderer.getWidth(line1),
+                client.textRenderer.getWidth(line2)
+        ) + 18);
+        int height = 34;
+
+        prepareElement(element, context, width, height);
+        drawPanel(context, element, width, height);
+
+        float opacity = element.getOpacity();
+        context.getMatrices().push();
+        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
+        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
+
+        context.drawTextWithShadow(client.textRenderer, line1, 8, 6, withOpacity(WHITE, opacity));
+        context.drawTextWithShadow(client.textRenderer, line2, 8, 19, withOpacity(MUTED, opacity));
 
         context.getMatrices().pop();
     }
@@ -125,34 +180,33 @@ public final class KalanHudRenderer {
             return;
         }
 
-        String coordinates = "XYZ  " + client.player.getBlockX()
-                + "  " + client.player.getBlockY()
-                + "  " + client.player.getBlockZ();
-        String direction = "FACING  "
+        String coordinates = "XYZ: " + client.player.getBlockX()
+                + " " + client.player.getBlockY()
+                + " " + client.player.getBlockZ();
+        String direction = "Facing: "
                 + client.player.getHorizontalFacing().getName().toUpperCase();
 
         int width = Math.max(
-                126,
+                132,
                 Math.max(
                         client.textRenderer.getWidth(coordinates),
                         client.textRenderer.getWidth(direction)
-                ) + 22
+                ) + 26
         );
         int height = 36;
 
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        context.drawTextWithShadow(client.textRenderer, "⌖  XYZ", 9, 2,
-                withOpacity(ACCENT, element.getOpacity()));
-        context.drawTextWithShadow(client.textRenderer, coordinates, 10, 15,
-                withOpacity(WHITE, element.getOpacity()));
-        context.drawTextWithShadow(client.textRenderer, "✥  " + direction, 10, 27,
-                withOpacity(MUTED, element.getOpacity()));
+        context.drawTextWithShadow(client.textRenderer, "⌖", 8, 7, withOpacity(ACCENT, opacity));
+        context.drawTextWithShadow(client.textRenderer, coordinates, 20, 7, withOpacity(WHITE, opacity));
+        context.drawTextWithShadow(client.textRenderer, "➤", 8, 20, withOpacity(ACCENT, opacity));
+        context.drawTextWithShadow(client.textRenderer, direction, 20, 20, withOpacity(MUTED, opacity));
 
         context.getMatrices().pop();
     }
@@ -164,37 +218,25 @@ public final class KalanHudRenderer {
         }
 
         int width = 96;
-        int height = 96;
+        int height = 94;
 
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        context.drawTextWithShadow(client.textRenderer, "KEYSTROKES", 9, 4,
-                withOpacity(ACCENT, element.getOpacity()));
-        drawKey(context, client, "W", 40, 24, client.options.forwardKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "A", 21, 43, client.options.leftKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "S", 40, 43, client.options.backKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "D", 59, 43, client.options.rightKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "LMB", 8, 63, client.options.attackKey.isPressed(), element.getOpacity(), 38);
-        drawKey(context, client, "RMB", 50, 63, client.options.useKey.isPressed(), element.getOpacity(), 38);
+        context.drawTextWithShadow(client.textRenderer, "⌨ Keystrokes", 8, 5, withOpacity(ACCENT, opacity));
+        drawKey(context, client, "W", 39, 20, client.options.forwardKey.isPressed(), opacity, 18);
+        drawKey(context, client, "A", 19, 40, client.options.leftKey.isPressed(), opacity, 18);
+        drawKey(context, client, "S", 39, 40, client.options.backKey.isPressed(), opacity, 18);
+        drawKey(context, client, "D", 59, 40, client.options.rightKey.isPressed(), opacity, 18);
+        drawKey(context, client, "LMB", 8, 61, client.options.attackKey.isPressed(), opacity, 38);
+        drawKey(context, client, "RMB", 50, 61, client.options.useKey.isPressed(), opacity, 38);
 
         context.getMatrices().pop();
-    }
-
-    private static void drawKey(
-            DrawContext context,
-            MinecraftClient client,
-            String label,
-            int x,
-            int y,
-            boolean pressed,
-            float opacity
-    ) {
-        drawKey(context, client, label, x, y, pressed, opacity, 16);
     }
 
     private static void drawKey(
@@ -208,7 +250,7 @@ public final class KalanHudRenderer {
             int width
     ) {
         int color = pressed ? TILE_ACTIVE : TILE;
-        context.fill(x, y, x + width, y + 15, withOpacity(color, opacity));
+        drawRoundedPanel(context, x, y, width, 16, 4, withOpacity(color, opacity));
         int textWidth = client.textRenderer.getWidth(label);
         context.drawTextWithShadow(
                 client.textRenderer,
@@ -234,12 +276,13 @@ public final class KalanHudRenderer {
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        drawMouseButton(context, client, "LMB", 7, leftPressed, element.getOpacity());
-        drawMouseButton(context, client, "RMB", 51, rightPressed, element.getOpacity());
+        drawMouseButton(context, client, "LMB", 7, leftPressed, opacity);
+        drawMouseButton(context, client, "RMB", 51, rightPressed, opacity);
 
         context.getMatrices().pop();
     }
@@ -252,10 +295,8 @@ public final class KalanHudRenderer {
             boolean pressed,
             float opacity
     ) {
-        context.fill(
-                x, 7, x + 38, 24,
-                withOpacity(pressed ? TILE_ACTIVE : TILE, opacity)
-        );
+        drawRoundedPanel(context, x, 7, 38, 17, 4,
+                withOpacity(pressed ? TILE_ACTIVE : TILE, opacity));
         int textWidth = client.textRenderer.getWidth(label);
         context.drawTextWithShadow(
                 client.textRenderer,
@@ -285,7 +326,7 @@ public final class KalanHudRenderer {
         }
 
         int visibleLines = Math.min(lines.size(), 6);
-        int width = 150;
+        int width = 152;
         for (int i = 0; i < visibleLines; i++) {
             width = Math.max(width, Math.min(
                     220,
@@ -293,17 +334,18 @@ public final class KalanHudRenderer {
             ));
         }
 
-        int height = 30 + visibleLines * 14;
+        int height = 24 + visibleLines * 14;
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
         context.drawTextWithShadow(
-                client.textRenderer, "✦  Potions", 9, 5,
-                withOpacity(ACCENT, element.getOpacity())
+                client.textRenderer, "✦ Potions", 9, 5,
+                withOpacity(ACCENT, opacity)
         );
 
         for (int i = 0; i < visibleLines; i++) {
@@ -312,7 +354,7 @@ public final class KalanHudRenderer {
                     lines.get(i),
                     9,
                     19 + i * 14,
-                    withOpacity(WHITE, element.getOpacity())
+                    withOpacity(WHITE, opacity)
             );
         }
 
@@ -325,8 +367,8 @@ public final class KalanHudRenderer {
             return;
         }
 
-        int width = 132;
-        int height = 54;
+        int width = 114;
+        int height = 46;
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
@@ -337,40 +379,85 @@ public final class KalanHudRenderer {
                 EquipmentSlot.FEET
         };
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
         context.drawTextWithShadow(
-                client.textRenderer, "♢  Armor", 8, 4,
-                withOpacity(ACCENT, element.getOpacity())
+                client.textRenderer, "♢ Armor", 8, 4,
+                withOpacity(ACCENT, opacity)
         );
 
         for (int i = 0; i < slots.length; i++) {
             ItemStack stack = client.player.getEquippedStack(slots[i]);
-            int itemX = 8 + i * 25;
+            int slotX = 8 + i * 25;
+            drawRoundedPanel(context, slotX, 16, 20, 20, 4, withOpacity(TILE, opacity));
 
-            if (stack.isEmpty()) {
-                context.fill(
-                        itemX + 2, 18, itemX + 18, 34,
-                        withOpacity(TILE, element.getOpacity())
-                );
-                continue;
-            }
+            if (!stack.isEmpty()) {
+                context.drawItem(stack, slotX + 2, 18);
 
-            context.drawItem(stack, itemX, 16);
-
-            if (stack.isDamageable()) {
-                float remaining = 1.0f - (float) stack.getDamage() / stack.getMaxDamage();
-                int barColor = remaining > 0.5f ? 0xFF78D69A
-                        : remaining > 0.2f ? 0xFFFFD18A : 0xFFFF8297;
-                context.fill(itemX + 1, 34, itemX + 20, 37,
-                        withOpacity(DIVIDER, element.getOpacity()));
-                context.fill(itemX + 1, 34,
-                        itemX + 1 + Math.round(19 * remaining), 37,
-                        withOpacity(barColor, element.getOpacity()));
+                if (stack.isDamageable()) {
+                    float remaining = 1.0f - (float) stack.getDamage() / stack.getMaxDamage();
+                    int barColor = remaining > 0.5f ? 0xFF78D69A
+                            : remaining > 0.2f ? 0xFFFFD18A : 0xFFFF8297;
+                    context.fill(slotX + 2, 37, slotX + 18, 39,
+                            withOpacity(DIVIDER, opacity));
+                    context.fill(slotX + 2, 37,
+                            slotX + 2 + Math.round(16 * remaining), 39,
+                            withOpacity(barColor, opacity));
+                }
             }
         }
+
+        context.getMatrices().pop();
+    }
+
+    private static void renderTargetHud(MinecraftClient client, DrawContext context) {
+        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
+        if (element == null || !element.isVisible()) {
+            return;
+        }
+
+        LivingEntity target = null;
+        if (client.targetedEntity instanceof LivingEntity living) {
+            target = living;
+        } else if (client.player.getAttacking() instanceof LivingEntity attacking) {
+            target = attacking;
+        }
+
+        if (target == null) {
+            return;
+        }
+
+        String name = target.getName().getString();
+        float hp = Math.max(0.0f, target.getHealth());
+        String hpText = String.format("%.1f HP", hp);
+
+        int width = Math.max(132, client.textRenderer.getWidth(name) + 48);
+        int height = 44;
+
+        prepareElement(element, context, width, height);
+        drawPanel(context, element, width, height);
+
+        float opacity = element.getOpacity();
+        context.getMatrices().push();
+        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
+        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
+
+        context.drawTextWithShadow(client.textRenderer, "⚔ Target HUD", 8, 4,
+                withOpacity(ACCENT, opacity));
+        drawRoundedPanel(context, 8, 15, 22, 22, 4, withOpacity(TILE, opacity));
+        context.drawTextWithShadow(client.textRenderer, name, 35, 16,
+                withOpacity(WHITE, opacity));
+        context.drawTextWithShadow(client.textRenderer, hpText, 35, 27,
+                withOpacity(MUTED, opacity));
+
+        float maxHp = Math.max(1.0f, target.getMaxHealth());
+        float ratio = Math.max(0.0f, Math.min(1.0f, hp / maxHp));
+        int barW = width - 43;
+        context.fill(35, 37, 35 + barW, 40, withOpacity(DIVIDER, opacity));
+        context.fill(35, 37, 35 + Math.round(barW * ratio), 40, withOpacity(ACCENT, opacity));
 
         context.getMatrices().pop();
     }
@@ -393,38 +480,50 @@ public final class KalanHudRenderer {
             }
         }
 
-        enabled.sort(String.CASE_INSENSITIVE_ORDER);
+        enabled.sort((a, b) -> Integer.compare(
+                client.textRenderer.getWidth(b),
+                client.textRenderer.getWidth(a)
+        ));
 
-        int width = 92;
-        for (String name : enabled) {
-            width = Math.max(width, client.textRenderer.getWidth(name) + 18);
+        int maxShown = 5;
+        int shownCount = Math.min(enabled.size(), maxShown);
+        int extraCount = Math.max(0, enabled.size() - maxShown);
+        String moreText = extraCount > 0 ? "+ " + extraCount + " more..." : null;
+
+        int width = 108;
+        for (int i = 0; i < shownCount; i++) {
+            width = Math.max(width, client.textRenderer.getWidth(enabled.get(i)) + 26);
+        }
+        if (moreText != null) {
+            width = Math.max(width, client.textRenderer.getWidth(moreText) + 18);
         }
 
-        int height = Math.max(28, enabled.size() * 15 + 22);
+        int height = 22 + shownCount * 14 + (moreText != null ? 13 : 0);
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
+        float opacity = element.getOpacity();
         context.getMatrices().push();
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        context.drawTextWithShadow(client.textRenderer, "◆  ArrayList", 8, 4,
-                withOpacity(ACCENT, element.getOpacity()));
-        for (int i = 0; i < enabled.size(); i++) {
+        context.drawTextWithShadow(client.textRenderer, "≣ ArrayList", 8, 5,
+                withOpacity(ACCENT, opacity));
+
+        for (int i = 0; i < shownCount; i++) {
             String name = enabled.get(i);
-            int textWidth = client.textRenderer.getWidth(name);
-            context.fill(
-                    width - 3, 18 + i * 15,
-                    width - 1, 27 + i * 15,
-                    withOpacity(ACCENT, element.getOpacity())
-            );
-            context.drawTextWithShadow(
-                    client.textRenderer,
-                    name,
-                    width - textWidth - 8,
-                    18 + i * 15,
-                    withOpacity(WHITE, element.getOpacity())
-            );
+            int rowY = 19 + i * 14;
+            context.drawTextWithShadow(client.textRenderer, "◆", 9, rowY,
+                    withOpacity(ACCENT, opacity));
+            context.drawTextWithShadow(client.textRenderer, name, 20, rowY,
+                    withOpacity(WHITE, opacity));
+        }
+
+        if (moreText != null) {
+            int moreY = 19 + shownCount * 14;
+            int moreW = client.textRenderer.getWidth(moreText);
+            context.drawTextWithShadow(client.textRenderer, moreText,
+                    width - moreW - 8, moreY, withOpacity(MUTED, opacity));
         }
 
         context.getMatrices().pop();
@@ -490,11 +589,11 @@ public final class KalanHudRenderer {
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
         drawRoundedPanel(
-                context, 0, 0, width, height, 6,
+                context, 0, 0, width, height, 7,
                 withOpacity(OUTLINE, opacity)
         );
         drawRoundedPanel(
-                context, 1, 1, width - 2, height - 2, 5,
+                context, 1, 1, width - 2, height - 2, 6,
                 withOpacity(BACKGROUND, opacity)
         );
 
