@@ -178,28 +178,43 @@ public final class KalanClickGuiScreen extends Screen {
                     context,
                     entry.getTitle(),
                     entryX + 9,
-                    entryY + 9,
+                    entryY + 7,
                     WHITE
             );
 
             text(
                     context,
-                    enabled ? "ON" : "OFF",
+                    shorten(entry.getDescription(), 22),
                     entryX + 9,
-                    entryY + 29,
+                    entryY + 21,
+                    MUTED
+            );
+
+            text(
+                    context,
+                    enabled ? "ВКЛ" : "ВЫКЛ",
+                    entryX + 9,
+                    entryY + 37,
                     enabled ? ACCENT : 0xFF777080
             );
 
             text(
                     context,
                     "ПКМ: настройки",
-                    entryX + 70,
-                    entryY + 29,
+                    entryX + 75,
+                    entryY + 37,
                     MUTED
             );
 
             index++;
         }
+    }
+
+    private String shorten(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value == null ? "" : value;
+        }
+        return value.substring(0, Math.max(0, maxLength - 3)) + "...";
     }
 
     private void renderSettings(DrawContext context, int x, int y) {
