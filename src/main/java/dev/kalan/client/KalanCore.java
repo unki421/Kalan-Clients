@@ -23,7 +23,6 @@ public final class KalanCore {
         KalanConfig.load();
         KalanHudLayoutStore.load();
         KalanHudRenderer.initialize();
-        KalanTargetHud.initialize();
         KalanHudDragHandler.initialize();
         KalanClickGuiKeybind.initialize();
 
