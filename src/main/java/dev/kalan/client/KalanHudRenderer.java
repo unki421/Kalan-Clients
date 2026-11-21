@@ -22,7 +22,7 @@ public final class KalanHudRenderer {
             Identifier.of(KalanClient.MOD_ID, "watermark_hud");
 
     private static final DateTimeFormatter CLOCK_FORMAT =
-            DateTimeFormatter.ofPattern("HH:mm");
+            DateTimeFormatter.ofPattern("HH:mm:ss");
 
     private static final int ACCENT = 0xFF9B62F5;
     private static final int BACKGROUND = 0xE60D0A14;
