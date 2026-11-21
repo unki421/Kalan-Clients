@@ -13,14 +13,14 @@ public final class KalanHudRegistry {
         // Positions are clamped to the active scaled resolution during rendering.
         register(new KalanHudElement(KalanHudPanel.WATERMARK, 10, 10));
         register(new KalanHudElement(KalanHudPanel.INFO, 10, 75));
-        register(new KalanHudElement(KalanHudPanel.COORDINATES, 10, 88));
-        register(new KalanHudElement(KalanHudPanel.POTIONS, 10, 145));
-        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 900, 10));
-        register(new KalanHudElement(KalanHudPanel.MOUSE, 900, 104));
-        register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 850, 147));
-        register(new KalanHudElement(KalanHudPanel.TARGET_HUD, 850, 382));
-        register(new KalanHudElement(KalanHudPanel.ARMOR, 875, 472));
-        find(KalanHudPanel.INFO).setVisible(false);
+        register(new KalanHudElement(KalanHudPanel.COORDINATES, 10, 70));
+        register(new KalanHudElement(KalanHudPanel.POTIONS, 10, 108));
+        register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 715, 8));
+        register(new KalanHudElement(KalanHudPanel.MOUSE, 715, 110));
+        register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 688, 118));
+        register(new KalanHudElement(KalanHudPanel.TARGET_HUD, 695, 307));
+        register(new KalanHudElement(KalanHudPanel.ARMOR, 705, 380));
+        find(KalanHudPanel.INFO).setVisible(false);\n        // Mouse buttons are already integrated into the Keystrokes panel in the reference.\n        find(KalanHudPanel.MOUSE).setVisible(false);
     }
     private KalanHudRegistry() {
     }
