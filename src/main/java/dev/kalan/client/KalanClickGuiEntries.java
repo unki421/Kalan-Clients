@@ -6,25 +6,26 @@ import java.util.List;
 
 public final class KalanClickGuiEntries {
 
-    private static final List<KalanClickGuiEntry> ENTRIES =
-            new ArrayList<>();
+    private static final List<KalanClickGuiEntry> HUD_ENTRIES = new ArrayList<>();
+    private static final List<KalanClickGuiEntry> COMBAT_ENTRIES = new ArrayList<>();
 
     static {
-        register(KalanHudPanel.WATERMARK);
-        register(KalanHudPanel.COORDINATES);
-        register(KalanHudPanel.KEYSTROKES);
-        register(KalanHudPanel.MOUSE);
-        register(KalanHudPanel.POTIONS);
-        register(KalanHudPanel.ARMOR);
-        register(KalanHudPanel.TARGET_HUD);
-        register(KalanHudPanel.ARRAY_LIST);
+        register(HUD_ENTRIES, KalanHudPanel.WATERMARK);
+        register(HUD_ENTRIES, KalanHudPanel.COORDINATES);
+        register(HUD_ENTRIES, KalanHudPanel.KEYSTROKES);
+        register(HUD_ENTRIES, KalanHudPanel.MOUSE);
+        register(HUD_ENTRIES, KalanHudPanel.POTIONS);
+        register(HUD_ENTRIES, KalanHudPanel.ARMOR);
+        register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
+
+        register(COMBAT_ENTRIES, KalanHudPanel.TARGET_HUD);
     }
 
     private KalanClickGuiEntries() {
     }
 
-    private static void register(KalanHudPanel panel) {
-        ENTRIES.add(new KalanClickGuiEntry(
+    private static void register(List<KalanClickGuiEntry> destination, KalanHudPanel panel) {
+        destination.add(new KalanClickGuiEntry(
                 panel.getTitle(),
                 panel.getDescription(),
                 panel
@@ -32,7 +33,17 @@ public final class KalanClickGuiEntries {
     }
 
     public static List<KalanClickGuiEntry> getAll() {
-        return Collections.unmodifiableList(ENTRIES);
+        List<KalanClickGuiEntry> all = new ArrayList<>(HUD_ENTRIES);
+        all.addAll(COMBAT_ENTRIES);
+        return Collections.unmodifiableList(all);
+    }
+
+    public static List<KalanClickGuiEntry> getHudEntries() {
+        return Collections.unmodifiableList(HUD_ENTRIES);
+    }
+
+    public static List<KalanClickGuiEntry> getCombatEntries() {
+        return Collections.unmodifiableList(COMBAT_ENTRIES);
     }
 
     public static KalanClickGuiEntry find(String title) {
@@ -40,7 +51,7 @@ public final class KalanClickGuiEntries {
             return null;
         }
 
-        for (KalanClickGuiEntry entry : ENTRIES) {
+        for (KalanClickGuiEntry entry : getAll()) {
             if (entry.getTitle().equalsIgnoreCase(title)) {
                 return entry;
             }
@@ -52,7 +63,7 @@ public final class KalanClickGuiEntries {
     public static List<KalanClickGuiEntry> getEnabled() {
         List<KalanClickGuiEntry> result = new ArrayList<>();
 
-        for (KalanClickGuiEntry entry : ENTRIES) {
+        for (KalanClickGuiEntry entry : getAll()) {
             if (entry.isEnabled()) {
                 result.add(entry);
             }
@@ -62,6 +73,6 @@ public final class KalanClickGuiEntries {
     }
 
     public static int size() {
-        return ENTRIES.size();
+        return HUD_ENTRIES.size() + COMBAT_ENTRIES.size();
     }
 }

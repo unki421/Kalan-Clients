@@ -1,10 +1,9 @@
-
 package dev.kalan.client;
 
 public enum KalanClickGuiCategory {
 
     HUD("HUD", "Информационный интерфейс"),
-    INTERFACE("Interface", "Настройки интерфейса"),
+    COMBAT("Combat", "Боевые информационные элементы"),
     SETTINGS("Settings", "Общие настройки");
 
     private final String title;

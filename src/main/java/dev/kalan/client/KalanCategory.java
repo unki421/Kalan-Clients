@@ -4,7 +4,7 @@ public enum KalanCategory {
 
     HUD("HUD"),
     VISUALS("Visuals"),
-    INTERFACE("Interface"),
+    COMBAT("Combat"),
     SETTINGS("Settings");
 
     private final String displayName;

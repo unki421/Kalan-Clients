@@ -1,6 +1,7 @@
 
 package dev.kalan.client;
 
+import java.util.List;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -136,7 +137,7 @@ public final class KalanClickGuiScreen extends Screen {
     }
 
     private void renderEntries(DrawContext context, int x, int y) {
-        if (category != KalanClickGuiCategory.HUD) {
+        if (category != KalanClickGuiCategory.HUD && category != KalanClickGuiCategory.COMBAT) {
             text(
                     context,
                     "В этом разделе пока нет элементов",
@@ -149,7 +150,11 @@ public final class KalanClickGuiScreen extends Screen {
 
         int index = 0;
 
-        for (KalanClickGuiEntry entry : KalanClickGuiEntries.getAll()) {
+        List<KalanClickGuiEntry> entries = category == KalanClickGuiCategory.COMBAT
+                ? KalanClickGuiEntries.getCombatEntries()
+                : KalanClickGuiEntries.getHudEntries();
+
+        for (KalanClickGuiEntry entry : entries) {
             int column = index % 2;
             int row = index / 2;
 
@@ -291,10 +296,13 @@ public final class KalanClickGuiScreen extends Screen {
             return true;
         }
 
-        if (category == KalanClickGuiCategory.HUD) {
+        if (category == KalanClickGuiCategory.HUD || category == KalanClickGuiCategory.COMBAT) {
             int index = 0;
+            List<KalanClickGuiEntry> entries = category == KalanClickGuiCategory.COMBAT
+                    ? KalanClickGuiEntries.getCombatEntries()
+                    : KalanClickGuiEntries.getHudEntries();
 
-            for (KalanClickGuiEntry entry : KalanClickGuiEntries.getAll()) {
+            for (KalanClickGuiEntry entry : entries) {
                 int column = index % 2;
                 int row = index / 2;
 

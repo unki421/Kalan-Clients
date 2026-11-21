@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
@@ -60,10 +61,16 @@ public final class KalanTargetHud {
     private static void render(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.options.hudHidden || client.player == null
-                || client.world == null || target == null) return;
+                || client.world == null) return;
 
         long elapsed = System.currentTimeMillis() - lastHitTime;
-        if (elapsed < 0L || elapsed >= DISPLAY_TIME_MS || target.isRemoved()) return;
+        boolean activeTarget = target != null && elapsed >= 0L
+                && elapsed < DISPLAY_TIME_MS && !target.isRemoved()
+                && target.getWorld() == client.world;
+        boolean preview = !activeTarget && client.currentScreen instanceof ChatScreen;
+        if (!activeTarget && !preview) return;
+
+        LivingEntity displayedTarget = activeTarget ? target : client.player;
 
         KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
         if (element == null || !element.isVisible()) return;
@@ -80,13 +87,19 @@ public final class KalanTargetHud {
 
         drawRoundedPanel(context, 0, 0, width, height, 7, withOpacity(OUTLINE, opacity));
         drawRoundedPanel(context, 1, 1, width - 2, height - 2, 6, withOpacity(BACKGROUND, opacity));
-        drawTargetHead(context, target, 9, 10, opacity);
+        drawTargetHead(context, displayedTarget, 9, 10, opacity);
 
-        String name = trimText(client, target.getName().getString(), 154);
+        String name = trimText(client, displayedTarget.getName().getString(), 154);
         context.drawTextWithShadow(client.textRenderer, name, 49, 9, withOpacity(WHITE, opacity));
+        if (preview) {
+            String previewLabel = "PREVIEW";
+            int previewWidth = client.textRenderer.getWidth(previewLabel);
+            context.drawTextWithShadow(client.textRenderer, previewLabel,
+                    width - previewWidth - 10, 9, withOpacity(ACCENT, opacity));
+        }
 
-        float health = Math.max(0.0f, target.getHealth());
-        float maxHealth = Math.max(1.0f, target.getMaxHealth());
+        float health = Math.max(0.0f, displayedTarget.getHealth());
+        float maxHealth = Math.max(1.0f, displayedTarget.getMaxHealth());
         float healthRatio = Math.min(1.0f, health / maxHealth);
         String healthText = String.format(java.util.Locale.ROOT, "%.1f / %.1f HP", health, maxHealth);
         context.drawTextWithShadow(client.textRenderer, healthText, 49, 23, withOpacity(MUTED, opacity));
@@ -100,7 +113,7 @@ public final class KalanTargetHud {
         }
 
         context.drawTextWithShadow(client.textRenderer, "MAIN HAND", 10, 52, withOpacity(ACCENT, opacity));
-        ItemStack mainHand = target.getMainHandStack();
+        ItemStack mainHand = displayedTarget.getMainHandStack();
         if (mainHand.isEmpty()) {
             context.fill(10, 66, 26, 82, withOpacity(TILE, opacity));
             context.drawTextWithShadow(client.textRenderer, "Empty", 31, 70, withOpacity(MUTED, opacity));
@@ -115,7 +128,7 @@ public final class KalanTargetHud {
                 EquipmentSlot.LEGS, EquipmentSlot.FEET};
         int armorStartX = 112;
         for (int i = 0; i < armorSlots.length; i++) {
-            ItemStack armor = target.getEquippedStack(armorSlots[i]);
+            ItemStack armor = displayedTarget.getEquippedStack(armorSlots[i]);
             int x = armorStartX + i * 29;
             if (armor.isEmpty()) {
                 context.fill(x + 3, 67, x + 19, 83, withOpacity(TILE, opacity));
@@ -142,7 +155,7 @@ public final class KalanTargetHud {
             }
         }
 
-        float timeLeft = Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
+        float timeLeft = preview ? 1.0f : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
         context.fill(8, 96, width - 8, 98, withOpacity(DIVIDER, opacity));
         context.fill(8, 96, 8 + Math.round((width - 16) * timeLeft), 98, withOpacity(ACCENT, opacity));
         context.getMatrices().pop();
