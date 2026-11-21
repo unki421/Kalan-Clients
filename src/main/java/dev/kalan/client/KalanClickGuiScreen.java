@@ -278,7 +278,7 @@ public final class KalanClickGuiScreen extends Screen {
         List<KalanClickGuiEntry> source = switch (category) {
             case HUD -> KalanClickGuiEntries.getHudEntries();
             case COMBAT -> KalanClickGuiEntries.getCombatEntries();
-            case SETTINGS -> KalanClickGuiEntries.getAll();
+            case SETTINGS -> List.of();
         };
 
         if (search.isBlank()) {
