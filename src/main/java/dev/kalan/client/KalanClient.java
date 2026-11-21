@@ -1,3 +1,4 @@
+
 package dev.kalan.client;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -19,5 +20,7 @@ public final class KalanClient implements ClientModInitializer {
         LOGGER.info("       Minecraft 1.21.4");
         LOGGER.info("       Client initialized!");
         LOGGER.info("================================");
+
+        KalanCore.initialize();
     }
 }
