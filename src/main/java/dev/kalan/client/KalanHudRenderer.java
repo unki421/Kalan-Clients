@@ -138,7 +138,7 @@ public final class KalanHudRenderer {
                         client.textRenderer.getWidth(direction)
                 ) + 22
         );
-        int height = 38;
+        int height = 50;
 
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
@@ -414,8 +414,8 @@ public final class KalanHudRenderer {
             String name = enabled.get(i);
             int textWidth = client.textRenderer.getWidth(name);
             context.fill(
-                    width - 3, 3 + i * 13,
-                    width - 1, 12 + i * 13,
+                    width - 3, 18 + i * 15,
+                    width - 1, 27 + i * 15,
                     withOpacity(ACCENT, element.getOpacity())
             );
             context.drawTextWithShadow(
