@@ -12,8 +12,8 @@ import org.lwjgl.glfw.GLFW;
 public final class KalanClickGuiScreen extends Screen {
     // Logical dimensions are derived from the supplied 1800x1013 reference:
     // the window occupies about 50% of screen width and 54% of screen height.
-    private static final int W = 448;
-    private static final int H = 273;
+    private static final int W = 520;
+    private static final int H = 320;
     private static final int OVERLAY = 0x9906030D;
     private static final int PANEL = 0xF50B0814;
     private static final int SIDEBAR = 0xFF100B1B;
@@ -136,7 +136,7 @@ public final class KalanClickGuiScreen extends Screen {
         int gap = 8;
         int cols = cw >= 330 ? 3 : cw >= 220 ? 2 : 1;
         int cardW = (cw - gap * (cols - 1)) / cols;
-        int cardH = 48;
+        int cardH = 54;
         int start = y + 52;
         int bottom = y + h - 5;
 
