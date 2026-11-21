@@ -1,4 +1,3 @@
-
 package dev.kalan.client;
 
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ public final class KalanCore {
 
         KalanConfig.load();
         KalanHudLayoutStore.load();
+        KalanHudRenderer.initialize();
         KalanClickGuiKeybind.initialize();
 
         initialized = true;
