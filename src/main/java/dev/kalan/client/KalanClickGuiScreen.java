@@ -293,8 +293,8 @@ public final class KalanClickGuiScreen extends Screen {
         int columns = contentWidth >= 350 ? 3 : contentWidth >= 230 ? 2 : 1;
         int gap = 8;
         int cardWidth = (contentWidth - (columns - 1) * gap) / columns;
-        int cardHeight = 58;
-        int startY = y + 54;
+        int cardHeight = 70;
+        int startY = y + 58;
 
         for (int i = 0; i < entries.size(); i++) {
             int column = i % columns;
