@@ -74,8 +74,8 @@ public final class KalanTargetHud {
         KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
         if (element == null || !element.isVisible()) return;
 
-        final int width = 120;
-        final int height = 65;
+        final int width = 140;
+        final int height = 72;
         element.setSize(width, height);
         element.clampToScreen(context.getScaledWindowWidth(), context.getScaledWindowHeight());
         float opacity = element.getOpacity();
@@ -105,17 +105,17 @@ public final class KalanTargetHud {
                 withOpacity(MUTED, opacity));
 
         int barY = 51;
-        context.fill(47, barY, 112, barY + 5, withOpacity(DIVIDER, opacity));
+        context.fill(47, barY, 132, barY + 5, withOpacity(DIVIDER, opacity));
         if (healthRatio > 0.0f) {
             int healthColor = healthRatio > 0.5f ? 0xFF78D69A
                     : healthRatio > 0.25f ? 0xFFFFD18A : 0xFFFF8297;
-            context.fill(47, barY, 47 + Math.round(65 * healthRatio), barY + 5,
+            context.fill(47, barY, 47 + Math.round(85 * healthRatio), barY + 5,
                     withOpacity(healthColor, opacity));
         }
 
         float timeLeft = preview ? 1.0f
                 : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
-        context.fill(8, 61, width - 8, 63, withOpacity(DIVIDER, opacity));
+        context.fill(8, 68, width - 8, 70, withOpacity(DIVIDER, opacity));
         context.fill(8, 61, 8 + Math.round((width - 16) * timeLeft), 63,
                 withOpacity(ACCENT, opacity));
         context.getMatrices().pop();
