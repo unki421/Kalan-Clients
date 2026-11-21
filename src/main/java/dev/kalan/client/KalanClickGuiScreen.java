@@ -10,8 +10,6 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class KalanClickGuiScreen extends Screen {
-    // Logical dimensions are derived from the supplied 1800x1013 reference:
-    // the window occupies about 50% of screen width and 54% of screen height.
     private static final int W = 520;
     private static final int H = 320;
     private static final int OVERLAY = 0x9906030D;
@@ -24,6 +22,9 @@ public final class KalanClickGuiScreen extends Screen {
     private static final int WHITE = 0xFFF5F0FF;
     private static final int MUTED = 0xFFAAA0B9;
     private static final int LINE = 0xFF39264E;
+
+    private static final int CARD_GAP = 8;
+    private static final int CARD_H = 54;
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private KalanClickGuiCategory category = KalanClickGuiCategory.HUD;
@@ -44,9 +45,24 @@ public final class KalanClickGuiScreen extends Screen {
         return Math.min(H, Math.max(240, height - 16));
     }
 
-    private int left() { return (width - px()) / 2; }
-    private int top() { return (height - py()) / 2; }
-    private int side() { return Math.max(52, Math.min(60, px() / 8)); }
+    private int left() {
+        return (width - px()) / 2;
+    }
+
+    private int top() {
+        return (height - py()) / 2;
+    }
+
+    private int side() {
+        return Math.max(52, Math.min(60, px() / 8));
+    }
+
+    private int columns(int cw) {
+        if (cw >= 330) {
+            return 3;
+        }
+        return cw >= 220 ? 2 : 1;
+    }
 
     private void txt(DrawContext c, String s, int x, int y, int color) {
         c.drawTextWithShadow(mc.textRenderer, s, x, y, color);
@@ -76,7 +92,7 @@ public final class KalanClickGuiScreen extends Screen {
         rounded(c, x, y, w, h, 13, 0xFF6D36B1);
         rounded(c, x + 1, y + 1, w - 2, h - 2, 12, PANEL);
 
-        // Compact brand block and top search row mirror the reference proportions.
+        // Шапка: логотип клиента + строка поиска + кнопка закрытия
         rounded(c, x + 7, y + 7, sw + 31, 39, 10, 0xFF21142F);
         txt(c, "◢", x + 15, y + 15, PURPLE_LIGHT);
         txt(c, "Kalan", x + 34, y + 10, WHITE);
@@ -90,14 +106,14 @@ public final class KalanClickGuiScreen extends Screen {
         String shown = search.isEmpty() ? "Search..." : search;
         txt(c, shown, cx + 31, y + 18, search.isEmpty() ? 0xFF777080 : WHITE);
         if (searchFocused && (System.currentTimeMillis() / 500) % 2 == 0) {
-            int caretX = cx + 31 + textW(search);
+            int caretX = cx + 31 + textW(shown);
             c.fill(caretX, y + 16, caretX + 1, y + 31, PURPLE_LIGHT);
         }
 
         rounded(c, x + w - 39, y + 9, 29, 32, 9, 0xFF21152E);
         txt(c, "×", x + w - 30, y + 17, PURPLE_LIGHT);
 
-        // Left icon rail.
+        // Левая панель категорий
         rounded(c, x + 7, y + 51, sw + 1, h - 59, 11, SIDEBAR);
         int idx = 0;
         for (KalanClickGuiCategory cat : KalanClickGuiCategory.values()) {
@@ -133,49 +149,48 @@ public final class KalanClickGuiScreen extends Screen {
             return;
         }
 
-        int gap = 8;
-        int cols = cw >= 330 ? 3 : cw >= 220 ? 2 : 1;
-        int cardW = (cw - gap * (cols - 1)) / cols;
-        int cardH = 54;
+        int cols = columns(cw);
+        int cardW = (cw - CARD_GAP * (cols - 1)) / cols;
         int start = y + 52;
-        int bottom = y + h - 5;
+        int bottom = y + h - 6;
 
+        int rows = (entries.size() + cols - 1) / cols;
+        int visibleHeight = Math.max(1, bottom - start);
+        int maxScroll = Math.max(0, rows * (CARD_H + CARD_GAP) - CARD_GAP - visibleHeight);
+        scroll = Math.max(0, Math.min(scroll, maxScroll));
+
+        c.enableScissor(x - 2, start, x + cw + 2, bottom);
         for (int i = 0; i < entries.size(); i++) {
             int col = i % cols;
             int row = i / cols;
-            int ax = x + col * (cardW + gap);
-            int ay = start + row * (cardH + gap) - scroll;
-            if (ay + cardH < y + 49 || ay > bottom) {
+            int ax = x + col * (cardW + CARD_GAP);
+            int ay = start + row * (CARD_H + CARD_GAP) - scroll;
+            if (ay + CARD_H < start || ay > bottom) {
                 continue;
             }
 
             KalanClickGuiEntry entry = entries.get(i);
             boolean enabled = entry.isEnabled();
-            boolean hover = KalanClickGuiLayout.contains(mouseX, mouseY, ax, ay, cardW, cardH);
+            boolean hover = KalanClickGuiLayout.contains(mouseX, mouseY, ax, ay, cardW, CARD_H);
 
-            rounded(c, ax, ay, cardW, cardH, 10,
+            rounded(c, ax, ay, cardW, CARD_H, 10,
                     hover ? PURPLE_LIGHT : 0xFF7545A8);
-            rounded(c, ax + 1, ay + 1, cardW - 2, cardH - 2, 9, CARD);
+            rounded(c, ax + 1, ay + 1, cardW - 2, CARD_H - 2, 9, CARD);
             rounded(c, ax + 4, ay + 4, cardW - 8, 20, 7, CARD_TOP);
 
             String title = trim(entry.getTitle(), cardW - 18);
             txt(c, title, ax + (cardW - textW(title)) / 2, ay + 9, WHITE);
 
-            // Toggle on the lower-left and settings affordance on the lower-right.
-            rounded(c, ax + 8, ay + 29, 29, 12, 7,
+            // Переключатель слева снизу и иконка настроек справа снизу
+            rounded(c, ax + 8, ay + 31, 29, 13, 7,
                     enabled ? PURPLE : 0xFF393342);
-            rounded(c, ax + (enabled ? 25 : 10), ay + 31, 8, 8, 5, 0xFFFFFFFF);
-            drawSettingsIcon(c, ax + cardW - 25, ay + 29, PURPLE_LIGHT);
+            rounded(c, ax + (enabled ? 25 : 10), ay + 33, 9, 9, 5, 0xFFFFFFFF);
+            drawSettingsIcon(c, ax + cardW - 24, ay + 30, PURPLE_LIGHT);
         }
-
-        int rows = (entries.size() + cols - 1) / cols;
-        int visibleHeight = bottom - start;
-        int maxScroll = Math.max(0, rows * (cardH + gap) - visibleHeight);
-        scroll = Math.max(0, Math.min(scroll, maxScroll));
+        c.disableScissor();
     }
 
     private void drawSettingsIcon(DrawContext c, int x, int y, int color) {
-        // Three real slider tracks, matching the reference's settings glyph.
         c.fill(x, y + 2, x + 14, y + 4, color);
         c.fill(x, y + 7, x + 14, y + 9, color);
         c.fill(x, y + 12, x + 14, y + 14, color);
@@ -206,8 +221,10 @@ public final class KalanClickGuiScreen extends Screen {
                             float value, float min, float max, String valueText) {
         txt(c, label, x + 8, y, WHITE);
         txt(c, valueText, x + cw - 38, y, PURPLE_LIGHT);
-        rounded(c, x + 8, y + 20, cw - 16, 7, 4, 0xFF393141);
-        int fill = Math.round((cw - 16) * (value - min) / (max - min));
+        int trackW = cw - 16;
+        rounded(c, x + 8, y + 20, trackW, 7, 4, 0xFF393141);
+        float ratio = Math.max(0.0f, Math.min(1.0f, (value - min) / (max - min)));
+        int fill = Math.round(trackW * ratio);
         rounded(c, x + 8, y + 20, Math.max(4, fill), 7, 4, PURPLE);
         rounded(c, x + 4 + fill, y + 16, 15, 15, 8, WHITE);
     }
@@ -290,12 +307,12 @@ public final class KalanClickGuiScreen extends Screen {
             if (button == 0) {
                 KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
                 if (element != null) {
-                    if (my >= y + 127 && my <= y + 151) {
+                    if (my >= y + 125 && my <= y + 148) {
                         element.setScale(element.getScale()
-                                + (mx < cx + cw / 2 ? -0.1f : 0.1f));
-                    } else if (my >= y + 190 && my <= y + 214) {
+                                + (mx < cx + cw / 2.0 ? -0.1f : 0.1f));
+                    } else if (my >= y + 188 && my <= y + 211) {
                         element.setOpacity(element.getOpacity()
-                                + (mx < cx + cw / 2 ? -0.1f : 0.1f));
+                                + (mx < cx + cw / 2.0 ? -0.1f : 0.1f));
                     }
                     KalanHudLayoutStore.save();
                 }
@@ -305,21 +322,24 @@ public final class KalanClickGuiScreen extends Screen {
         }
 
         List<KalanClickGuiEntry> entries = visibleEntries();
-        int gap = 8;
-        int cols = cw >= 330 ? 3 : cw >= 220 ? 2 : 1;
-        int cardW = (cw - gap * (cols - 1)) / cols;
-        int cardH = 48;
+        int cols = columns(cw);
+        int cardW = (cw - CARD_GAP * (cols - 1)) / cols;
         int start = y + 52;
+        int bottom = y + h - 6;
+
+        if (my < start || my > bottom) {
+            return super.mouseClicked(mx, my, button);
+        }
 
         for (int n = 0; n < entries.size(); n++) {
-            int ax = cx + (n % cols) * (cardW + gap);
-            int ay = start + (n / cols) * (cardH + gap) - scroll;
-            if (!KalanClickGuiLayout.contains((int) mx, (int) my, ax, ay, cardW, cardH)) {
+            int ax = cx + (n % cols) * (cardW + CARD_GAP);
+            int ay = start + (n / cols) * (CARD_H + CARD_GAP) - scroll;
+            if (!KalanClickGuiLayout.contains((int) mx, (int) my, ax, ay, cardW, CARD_H)) {
                 continue;
             }
 
             KalanClickGuiEntry entry = entries.get(n);
-            if (button == 1 || (button == 0 && mx >= ax + cardW - 23 && my >= ay + 25)) {
+            if (button == 1 || (button == 0 && mx >= ax + cardW - 26 && my >= ay + 27)) {
                 selected = entry;
                 return true;
             }
@@ -334,7 +354,7 @@ public final class KalanClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double horizontal, double vertical) {
-        if (mx < left() + side() + 12) {
+        if (mx < left() + side() + 12 || selected != null) {
             return super.mouseScrolled(mx, my, horizontal, vertical);
         }
         scroll = Math.max(0, Math.min(2000, scroll - (int) (vertical * 28)));
