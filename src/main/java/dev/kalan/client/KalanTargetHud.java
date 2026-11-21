@@ -71,12 +71,11 @@ public final class KalanTargetHud {
         if (!activeTarget && !preview) return;
 
         LivingEntity displayedTarget = activeTarget ? target : client.player;
-
         KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.TARGET_HUD);
         if (element == null || !element.isVisible()) return;
 
-        final int width = 238;
-        final int height = 100;
+        final int width = 150;
+        final int height = 64;
         element.setSize(width, height);
         element.clampToScreen(context.getScaledWindowWidth(), context.getScaledWindowHeight());
         float opacity = element.getOpacity();
@@ -85,79 +84,38 @@ public final class KalanTargetHud {
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        drawRoundedPanel(context, 0, 0, width, height, 7, withOpacity(OUTLINE, opacity));
-        drawRoundedPanel(context, 1, 1, width - 2, height - 2, 6, withOpacity(BACKGROUND, opacity));
-        drawTargetHead(context, displayedTarget, 9, 10, opacity);
+        drawRoundedPanel(context, 0, 0, width, height, 8, withOpacity(OUTLINE, opacity));
+        drawRoundedPanel(context, 1, 1, width - 2, height - 2, 7, withOpacity(BACKGROUND, opacity));
+        drawTargetHead(context, displayedTarget, 8, 8, opacity);
 
-        String name = trimText(client, displayedTarget.getName().getString(), 154);
-        context.drawTextWithShadow(client.textRenderer, name, 49, 9, withOpacity(WHITE, opacity));
+        String name = trimText(client, displayedTarget.getName().getString(), 84);
+        context.drawTextWithShadow(client.textRenderer, name, 47, 10, withOpacity(WHITE, opacity));
         if (preview) {
-            String previewLabel = "PREVIEW";
-            int previewWidth = client.textRenderer.getWidth(previewLabel);
-            context.drawTextWithShadow(client.textRenderer, previewLabel,
-                    width - previewWidth - 10, 9, withOpacity(ACCENT, opacity));
+            context.drawTextWithShadow(client.textRenderer, "PREVIEW", 47, 23,
+                    withOpacity(ACCENT, opacity));
         }
 
         float health = Math.max(0.0f, displayedTarget.getHealth());
         float maxHealth = Math.max(1.0f, displayedTarget.getMaxHealth());
         float healthRatio = Math.min(1.0f, health / maxHealth);
-        String healthText = String.format(java.util.Locale.ROOT, "%.1f / %.1f HP", health, maxHealth);
-        context.drawTextWithShadow(client.textRenderer, healthText, 49, 23, withOpacity(MUTED, opacity));
+        String healthText = String.format(java.util.Locale.ROOT, "%.1f HP", health);
+        context.drawTextWithShadow(client.textRenderer, healthText, 47, preview ? 34 : 27,
+                withOpacity(MUTED, opacity));
 
-        context.fill(49, 38, 224, 43, withOpacity(DIVIDER, opacity));
+        int barY = 45;
+        context.fill(47, barY, 140, barY + 5, withOpacity(DIVIDER, opacity));
         if (healthRatio > 0.0f) {
             int healthColor = healthRatio > 0.5f ? 0xFF78D69A
                     : healthRatio > 0.25f ? 0xFFFFD18A : 0xFFFF8297;
-            context.fill(49, 38, 49 + Math.round(175 * healthRatio), 43,
+            context.fill(47, barY, 47 + Math.round(93 * healthRatio), barY + 5,
                     withOpacity(healthColor, opacity));
         }
 
-        context.drawTextWithShadow(client.textRenderer, "MAIN HAND", 10, 52, withOpacity(ACCENT, opacity));
-        ItemStack mainHand = displayedTarget.getMainHandStack();
-        if (mainHand.isEmpty()) {
-            context.fill(10, 66, 26, 82, withOpacity(TILE, opacity));
-            context.drawTextWithShadow(client.textRenderer, "Empty", 31, 70, withOpacity(MUTED, opacity));
-        } else {
-            context.drawItem(mainHand, 9, 65);
-            context.drawTextWithShadow(client.textRenderer,
-                    trimText(client, mainHand.getName().getString(), 178),
-                    31, 70, withOpacity(WHITE, opacity));
-        }
-
-        EquipmentSlot[] armorSlots = {EquipmentSlot.HEAD, EquipmentSlot.CHEST,
-                EquipmentSlot.LEGS, EquipmentSlot.FEET};
-        int armorStartX = 112;
-        for (int i = 0; i < armorSlots.length; i++) {
-            ItemStack armor = displayedTarget.getEquippedStack(armorSlots[i]);
-            int x = armorStartX + i * 29;
-            if (armor.isEmpty()) {
-                context.fill(x + 3, 67, x + 19, 83, withOpacity(TILE, opacity));
-                context.fill(x + 5, 74, x + 17, 76, withOpacity(DIVIDER, opacity));
-                continue;
-            }
-
-            context.drawItem(armor, x, 65);
-            if (armor.isDamageable()) {
-                int remaining = Math.max(0, armor.getMaxDamage() - armor.getDamage());
-                int percent = Math.round(100.0f * remaining / armor.getMaxDamage());
-                int barColor = percent > 50 ? 0xFF78D69A
-                        : percent > 20 ? 0xFFFFD18A : 0xFFFF8297;
-                context.fill(x + 1, 84, x + 23, 86, withOpacity(DIVIDER, opacity));
-                context.fill(x + 1, 84, x + 1 + Math.round(22.0f * percent / 100.0f), 86,
-                        withOpacity(barColor, opacity));
-                String durability = percent + "%";
-                int textWidth = client.textRenderer.getWidth(durability);
-                context.drawTextWithShadow(client.textRenderer, durability,
-                        x + 12 - textWidth / 2, 88, withOpacity(MUTED, opacity));
-            } else {
-                context.drawTextWithShadow(client.textRenderer, "—", x + 9, 88,
-                        withOpacity(MUTED, opacity));
-            }
-        }
-
-        float timeLeft = preview ? 1.0f : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
-        context.fill(8, 96, width - 8, 98, withOpacity(DIVIDER, opacity));
-        context.fill(8, 96, 8 + Math.round((width - 16) * timeLeft), 98, withOpacity(ACCENT, opacity));
+        float timeLeft = preview ? 1.0f
+                : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
+        context.fill(8, 58, width - 8, 60, withOpacity(DIVIDER, opacity));
+        context.fill(8, 58, 8 + Math.round((width - 16) * timeLeft), 60,
+                withOpacity(ACCENT, opacity));
         context.getMatrices().pop();
     }
 
