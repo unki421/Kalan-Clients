@@ -16,7 +16,6 @@ public final class KalanClickGuiEntries {
         register(KalanHudPanel.MOUSE);
         register(KalanHudPanel.POTIONS);
         register(KalanHudPanel.ARMOR);
-        register(KalanHudPanel.PLAYER_STATUS);
         register(KalanHudPanel.ARRAY_LIST);
     }
 
