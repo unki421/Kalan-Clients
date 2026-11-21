@@ -17,7 +17,6 @@ public final class KalanClickGuiEntries {
         register(HUD_ENTRIES, KalanHudPanel.ARMOR);
         register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
 
-        register(COMBAT_ENTRIES, KalanHudPanel.TARGET_HUD);
     }
 
     private KalanClickGuiEntries() {
