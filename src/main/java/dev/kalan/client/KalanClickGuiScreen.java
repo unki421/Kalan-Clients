@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class KalanClickGuiScreen extends Screen {
-    private static final int W = 840, H = 520;
+    private static final int W = 980, H = 600;
     private static final int OVERLAY = 0x9906030D;
     private static final int PANEL = 0xF50B0814;
     private static final int SIDEBAR = 0xFF100B1B;
@@ -54,7 +54,8 @@ public final class KalanClickGuiScreen extends Screen {
         // The brand block occupies the upper-left corner, as in the reference.
         rounded(c,x+10,y+10,sw+58,66,13,0xFF21142F);
         txt(c,"◢",x+23,y+25,PURPLE_LIGHT);
-        txt(c,"Kalan Client",x+51,y+17,WHITE);
+        txt(c,"KALAN",x+51,y+15,WHITE);
+        txt(c,"CLIENT",x+51,y+29,PURPLE_LIGHT);
         String player=mc.player==null?"Player: —":"Player: "+mc.player.getName().getString();
         txt(c,trim(player,sw+40),x+51,y+39,MUTED);
 
@@ -89,6 +90,8 @@ public final class KalanClickGuiScreen extends Screen {
         rounded(c,x+w-53,y+18,35,43,11,0xFF21152E);
         txt(c,"×",x+w-42,y+29,PURPLE_LIGHT);
         c.fill(x+sw+10,y+77,x+w-12,y+78,LINE);
+        txt(c,category.getTitle().toUpperCase(Locale.ROOT),cx+4,y+87,PURPLE_LIGHT);
+        txt(c,category.getDescription(),cx+4,y+101,MUTED);
 
         if(selected!=null) renderSettings(c,cx,y,cw,h);
         else renderCards(c,cx,y,cw,h,mx,my);
@@ -101,8 +104,8 @@ public final class KalanClickGuiScreen extends Screen {
     private void renderCards(DrawContext c,int x,int y,int cw,int h,int mouseX,int mouseY) {
         List<KalanClickGuiEntry> entries=visibleEntries();
         if(entries.isEmpty()) { txt(c,"Ничего не найдено",x+20,y+112,MUTED); return; }
-        int gap=11, cols=cw>=570?3:cw>=370?2:1;
-        int cardW=(cw-gap*(cols-1))/cols, cardH=91, start=y+91;
+        int gap=13, cols=cw>=570?3:cw>=370?2:1;
+        int cardW=(cw-gap*(cols-1))/cols, cardH=116, start=y+132;
         int bottom=y+h-39;
         for(int i=0;i<entries.size();i++) {
             int col=i%cols,row=i/cols;
@@ -111,16 +114,18 @@ public final class KalanClickGuiScreen extends Screen {
             KalanClickGuiEntry e=entries.get(i);
             boolean on=e.isEnabled();
             boolean hover=KalanClickGuiLayout.contains(mouseX,mouseY,ax,ay,cardW,cardH);
-            rounded(c,ax,ay,cardW,cardH,14,hover?PURPLE_LIGHT:0xFF7650A6);
-            rounded(c,ax+2,ay+2,cardW-4,cardH-4,12,CARD);
-            rounded(c,ax+10,ay+9,cardW-20,34,10,CARD_TOP);
-            String title=trim(e.getTitle(),cardW-36);
-            txt(c,title,ax+(cardW-textW(title))/2,ay+20,WHITE);
-
-            // Purple pill toggle and settings glyph mirror the reference controls.
-            rounded(c,ax+13,ay+57,49,20,10,on?PURPLE:0xFF393342);
-            rounded(c,ax+(on?39:16),ay+60,14,14,8,0xFFFFFFFF);
-            txt(c,"☷",ax+cardW-30,ay+56,PURPLE_LIGHT);
+            rounded(c,ax,ay,cardW,cardH,14,hover?PURPLE_LIGHT:0xFF624080);
+            rounded(c,ax+1,ay+1,cardW-2,cardH-2,13,CARD);
+            rounded(c,ax+9,ay+9,cardW-18,39,10,CARD_TOP);
+            String title=trim(e.getTitle(),cardW-42);
+            txt(c,title,ax+18,ay+21,WHITE);
+            String description=trim(e.getDescription(),cardW-28);
+            txt(c,description,ax+12,ay+58,MUTED);
+            c.fill(ax+12,ay+82,ax+cardW-12,ay+83,LINE);
+            txt(c,on?"ВКЛЮЧЕНО":"ВЫКЛЮЧЕНО",ax+13,ay+94,on?PURPLE_LIGHT:MUTED);
+            rounded(c,ax+cardW-69,ay+91,49,19,10,on?PURPLE:0xFF393342);
+            rounded(c,ax+cardW-(on?43:66),ay+94,13,13,8,0xFFFFFFFF);
+            txt(c,"⚙",ax+cardW-20,ay+94,PURPLE_LIGHT);
             if(hover) rounded(c,ax+1,ay+1,cardW-2,2,1,PURPLE_LIGHT);
         }
         int rows=(entries.size()+cols-1)/cols;
@@ -201,12 +206,13 @@ public final class KalanClickGuiScreen extends Screen {
             return true;
         }
         List<KalanClickGuiEntry> entries=visibleEntries();
-        int gap=11,cols=cw>=570?3:cw>=370?2:1,cardW=(cw-gap*(cols-1))/cols,cardH=91,start=y+91;
+        int gap=13,cols=cw>=570?3:cw>=370?2:1,cardW=(cw-gap*(cols-1))/cols,cardH=116,start=y+132;
         for(int n=0;n<entries.size();n++) {
             int ax=cx+(n%cols)*(cardW+gap),ay=start+(n/cols)*(cardH+gap)-scroll;
             if(!KalanClickGuiLayout.contains((int)mx,(int)my,ax,ay,cardW,cardH))continue;
             KalanClickGuiEntry e=entries.get(n);
-            if(button==1||(button==0&&mx>=ax+cardW-43)){selected=e;return true;}
+            if(button==1||(button==0&&mx>=ax+cardW-42&&my>=ay+86)){selected=e;return true;}
+            if(button==0&&mx>=ax+cardW-75&&my>=ay+86){selected=e;return true;}
             if(button==0){e.toggle();return true;}
         }
         return super.mouseClicked(mx,my,button);
