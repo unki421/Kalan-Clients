@@ -211,8 +211,7 @@ public final class KalanClickGuiScreen extends Screen {
             int ax=cx+(n%cols)*(cardW+gap),ay=start+(n/cols)*(cardH+gap)-scroll;
             if(!KalanClickGuiLayout.contains((int)mx,(int)my,ax,ay,cardW,cardH))continue;
             KalanClickGuiEntry e=entries.get(n);
-            if(button==1||(button==0&&mx>=ax+cardW-18&&my>=ay+43)){selected=e;return true;}
-            if(button==0&&mx>=ax+cardW-48&&my>=ay+43){selected=e;return true;}
+            if(button==1||(button==0&&mx>=ax+cardW-20&&my>=ay+43)){selected=e;return true;}
             if(button==0){e.toggle();return true;}
         }
         return super.mouseClicked(mx,my,button);
