@@ -70,7 +70,6 @@ public final class KalanHudRenderer {
         renderMouse(client, context);
         renderPotions(client, context);
         renderArmor(client, context);
-        renderPlayerStatus(client, context);
         renderArrayList(client, context);
     }
 
@@ -391,60 +390,6 @@ public final class KalanHudRenderer {
                         withOpacity(barColor, element.getOpacity()));
             }
         }
-
-        context.getMatrices().pop();
-    }
-
-    private static void renderPlayerStatus(MinecraftClient client, DrawContext context) {
-        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.PLAYER_STATUS);
-        if (element == null || !element.isVisible()) {
-            return;
-        }
-
-        float health = client.player.getHealth();
-        float maxHealth = client.player.getMaxHealth();
-        int food = client.player.getHungerManager().getFoodLevel();
-        int armor = client.player.getArmor();
-
-        String healthText = String.format("HP  %.1f / %.0f", health, maxHealth);
-        String foodText = "FOOD  " + food + " / 20";
-        String armorText = "ARMOR  " + armor;
-
-        int width = Math.max(
-                126,
-                Math.max(
-                        client.textRenderer.getWidth(healthText),
-                        Math.max(
-                                client.textRenderer.getWidth(foodText),
-                                client.textRenderer.getWidth(armorText)
-                        )
-                ) + 20
-        );
-        int height = 54;
-
-        prepareElement(element, context, width, height);
-        drawPanel(context, element, width, height);
-
-        context.getMatrices().push();
-        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
-        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
-
-        context.drawTextWithShadow(
-                client.textRenderer, "PLAYER STATUS", 9, 5,
-                withOpacity(ACCENT, element.getOpacity())
-        );
-        context.drawTextWithShadow(
-                client.textRenderer, healthText, 9, 18,
-                withOpacity(WHITE, element.getOpacity())
-        );
-        context.drawTextWithShadow(
-                client.textRenderer, foodText, 9, 30,
-                withOpacity(MUTED, element.getOpacity())
-        );
-        context.drawTextWithShadow(
-                client.textRenderer, armorText, 9, 42,
-                withOpacity(MUTED, element.getOpacity())
-        );
 
         context.getMatrices().pop();
     }
