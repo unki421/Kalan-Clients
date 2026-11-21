@@ -116,7 +116,7 @@ public final class KalanTargetHud {
         float timeLeft = preview ? 1.0f
                 : Math.max(0.0f, 1.0f - (float) elapsed / DISPLAY_TIME_MS);
         context.fill(8, 68, width - 8, 70, withOpacity(DIVIDER, opacity));
-        context.fill(8, 61, 8 + Math.round((width - 16) * timeLeft), 63,
+        context.fill(8, 68, 8 + Math.round((width - 16) * timeLeft), 70,
                 withOpacity(ACCENT, opacity));
         context.getMatrices().pop();
     }
