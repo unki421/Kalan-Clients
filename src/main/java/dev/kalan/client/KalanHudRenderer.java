@@ -70,7 +70,6 @@ public final class KalanHudRenderer {
         }
 
         renderWatermark(client, context);
-        renderInfo(client, context);
         renderCoordinates(client, context);
         renderKeystrokes(client, context);
         renderPotions(client, context);
