@@ -7,7 +7,9 @@ public enum KalanHudPanel {
     COORDINATES("Coordinates", "Координаты игрока"),
     KEYSTROKES("Keystrokes", "Клавиши WASD"),
     MOUSE("Mouse", "ЛКМ и ПКМ"),
-    POTIONS("Potions", "Активные эффекты зелий");
+    POTIONS("Potions", "Активные эффекты зелий"),
+    ARMOR("Armor", "Надетая броня и её прочность"),
+    ARRAY_LIST("ArrayList", "Список включённых HUD-панелей");
 
     private final String title;
     private final String description;

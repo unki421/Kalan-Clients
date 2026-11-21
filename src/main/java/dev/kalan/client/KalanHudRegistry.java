@@ -15,6 +15,9 @@ public final class KalanHudRegistry {
         register(new KalanHudElement(KalanHudPanel.KEYSTROKES, 6, 110));
         register(new KalanHudElement(KalanHudPanel.MOUSE, 6, 178));
         register(new KalanHudElement(KalanHudPanel.POTIONS, 6, 216));
+        register(new KalanHudElement(KalanHudPanel.ARMOR, 170, 216));
+        register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 500, 6));
+        find(KalanHudPanel.INFO).setVisible(false);
     }
 
     private KalanHudRegistry() {

@@ -6,7 +6,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.time.LocalTime;
@@ -67,6 +69,8 @@ public final class KalanHudRenderer {
         renderKeystrokes(client, context);
         renderMouse(client, context);
         renderPotions(client, context);
+        renderArmor(client, context);
+        renderArrayList(client, context);
     }
 
     private static void renderWatermark(MinecraftClient client, DrawContext context) {
@@ -327,6 +331,115 @@ public final class KalanHudRenderer {
                     lines.get(i),
                     9,
                     17 + i * 12,
+                    withOpacity(WHITE, element.getOpacity())
+            );
+        }
+
+        context.getMatrices().pop();
+    }
+
+    private static void renderArmor(MinecraftClient client, DrawContext context) {
+        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.ARMOR);
+        if (element == null || !element.isVisible()) {
+            return;
+        }
+
+        int width = 112;
+        int height = 42;
+        prepareElement(element, context, width, height);
+        drawPanel(context, element, width, height);
+
+        EquipmentSlot[] slots = {
+                EquipmentSlot.HEAD,
+                EquipmentSlot.CHEST,
+                EquipmentSlot.LEGS,
+                EquipmentSlot.FEET
+        };
+
+        context.getMatrices().push();
+        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
+        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
+
+        context.drawTextWithShadow(
+                client.textRenderer, "ARMOR", 8, 4,
+                withOpacity(ACCENT, element.getOpacity())
+        );
+
+        for (int i = 0; i < slots.length; i++) {
+            ItemStack stack = client.player.getEquippedStack(slots[i]);
+            int itemX = 8 + i * 25;
+
+            if (stack.isEmpty()) {
+                context.fill(
+                        itemX + 2, 18, itemX + 18, 34,
+                        withOpacity(TILE, element.getOpacity())
+                );
+                continue;
+            }
+
+            context.drawItem(stack, itemX, 16);
+
+            if (stack.isDamageable()) {
+                float remaining = 1.0f - (float) stack.getDamage() / stack.getMaxDamage();
+                int barColor = remaining > 0.5f ? 0xFF78D69A
+                        : remaining > 0.2f ? 0xFFFFD18A : 0xFFFF8297;
+                context.fill(itemX + 1, 34, itemX + 20, 37,
+                        withOpacity(DIVIDER, element.getOpacity()));
+                context.fill(itemX + 1, 34,
+                        itemX + 1 + Math.round(19 * remaining), 37,
+                        withOpacity(barColor, element.getOpacity()));
+            }
+        }
+
+        context.getMatrices().pop();
+    }
+
+    private static void renderArrayList(MinecraftClient client, DrawContext context) {
+        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.ARRAY_LIST);
+        if (element == null || !element.isVisible()) {
+            return;
+        }
+
+        List<String> enabled = new ArrayList<>();
+        for (KalanHudPanel panel : KalanHudPanel.values()) {
+            if (panel == KalanHudPanel.ARRAY_LIST) {
+                continue;
+            }
+
+            KalanHudElement panelElement = KalanHudRegistry.find(panel);
+            if (panelElement != null && panelElement.isVisible()) {
+                enabled.add(panel.getTitle());
+            }
+        }
+
+        enabled.sort(String.CASE_INSENSITIVE_ORDER);
+
+        int width = 92;
+        for (String name : enabled) {
+            width = Math.max(width, client.textRenderer.getWidth(name) + 18);
+        }
+
+        int height = Math.max(14, enabled.size() * 13 + 4);
+        prepareElement(element, context, width, height);
+        drawPanel(context, element, width, height);
+
+        context.getMatrices().push();
+        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
+        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
+
+        for (int i = 0; i < enabled.size(); i++) {
+            String name = enabled.get(i);
+            int textWidth = client.textRenderer.getWidth(name);
+            context.fill(
+                    width - 3, 3 + i * 13,
+                    width - 1, 12 + i * 13,
+                    withOpacity(ACCENT, element.getOpacity())
+            );
+            context.drawTextWithShadow(
+                    client.textRenderer,
+                    name,
+                    width - textWidth - 8,
+                    3 + i * 13,
                     withOpacity(WHITE, element.getOpacity())
             );
         }
