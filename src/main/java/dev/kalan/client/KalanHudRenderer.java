@@ -73,7 +73,6 @@ public final class KalanHudRenderer {
         renderInfo(client, context);
         renderCoordinates(client, context);
         renderKeystrokes(client, context);
-        renderMouse(client, context);
         renderPotions(client, context);
         renderArmor(client, context);
         renderTargetHud(client, context);
@@ -291,31 +290,6 @@ public final class KalanHudRenderer {
                 y + (h - client.textRenderer.fontHeight) / 2 + 1,
                 withOpacity(pressed ? WHITE : MUTED, opacity)
         );
-    }
-
-    private static void renderMouse(MinecraftClient client, DrawContext context) {
-        KalanHudElement element = KalanHudRegistry.find(KalanHudPanel.MOUSE);
-        if (element == null || !element.isVisible()) {
-            return;
-        }
-
-        int width = 92;
-        int height = 30;
-
-        prepareElement(element, context, width, height);
-        float opacity = element.getOpacity();
-
-        context.getMatrices().push();
-        context.getMatrices().translate(element.getX(), element.getY(), 0.0);
-        context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
-
-        drawCard(context, 0, 0, width, height, 8, opacity);
-        drawKeyTile(context, client, "LMB", 7, 6, 37, 18,
-                client.options.attackKey.isPressed(), opacity);
-        drawKeyTile(context, client, "RMB", 48, 6, 37, 18,
-                client.options.useKey.isPressed(), opacity);
-
-        context.getMatrices().pop();
     }
 
     private static void renderPotions(MinecraftClient client, DrawContext context) {
