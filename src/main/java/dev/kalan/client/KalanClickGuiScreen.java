@@ -40,6 +40,8 @@ public final class KalanClickGuiScreen extends Screen {
     private String search = "";
     private int scroll;
     private boolean searchFocused;
+    private boolean draggingScale;
+    private boolean draggingOpacity;
 
     public KalanClickGuiScreen() {
         super(Text.literal("Kalan Client"));
@@ -258,7 +260,7 @@ public final class KalanClickGuiScreen extends Screen {
         drawSlider(c, x, bodyY + 124, cw, "Прозрачность", element.getOpacity(),
                 0.1f, 1.0f, Math.round(element.getOpacity() * 100) + "%");
 
-        txt(c, "Клик по шкале меняет значение", x + 8, bodyY + 178, MUTED);
+        txt(c, "Перетаскивай ползунок для изменения", x + 8, bodyY + 178, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -271,7 +273,7 @@ public final class KalanClickGuiScreen extends Screen {
         float ratio = Math.max(0.0f, Math.min(1.0f, (value - min) / (max - min)));
         int fill = Math.round(trackW * ratio);
         rounded(c, x + 8, y + 19, Math.max(4, fill), 6, 3, ACCENT);
-        rounded(c, x + 4 + fill, y + 15, 14, 14, 7, WHITE);
+        rounded(c, x + 8 + fill - 7, y + 15, 14, 14, 7, WHITE);
     }
 
     private List<KalanClickGuiEntry> visibleEntries() {
@@ -362,14 +364,17 @@ public final class KalanClickGuiScreen extends Screen {
             if (button == 0) {
                 KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
                 if (element != null) {
-                    if (my >= bodyY + 78 && my <= bodyY + 100) {
-                        element.setScale(element.getScale()
-                                + (mx < cx + cw / 2.0 ? -0.1f : 0.1f));
-                    } else if (my >= bodyY + 138 && my <= bodyY + 160) {
-                        element.setOpacity(element.getOpacity()
-                                + (mx < cx + cw / 2.0 ? -0.1f : 0.1f));
+                    if (my >= bodyY + 78 && my <= bodyY + 100
+                            && mx >= cx + 8 && mx <= cx + cw - 8) {
+                        draggingScale = true;
+                        updateSliderValue(mx, cx, cw, element, true);
+                        return true;
+                    } else if (my >= bodyY + 138 && my <= bodyY + 160
+                            && mx >= cx + 8 && mx <= cx + cw - 8) {
+                        draggingOpacity = true;
+                        updateSliderValue(mx, cx, cw, element, false);
+                        return true;
                     }
-                    KalanHudLayoutStore.save();
                 }
                 return true;
             }
@@ -405,6 +410,43 @@ public final class KalanClickGuiScreen extends Screen {
         }
 
         return super.mouseClicked(mx, my, button);
+    }
+
+    private void updateSliderValue(double mouseX, int x, int cw,
+                                    KalanHudElement element, boolean scale) {
+        int trackX = x + 8;
+        int trackW = Math.max(1, cw - 16);
+        float ratio = (float) Math.max(0.0, Math.min(1.0, (mouseX - trackX) / trackW));
+        if (scale) {
+            element.setScale(0.5f + ratio * 1.5f);
+        } else {
+            element.setOpacity(0.1f + ratio * 0.9f);
+        }
+    }
+
+    @Override
+    public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+        if (button == 0 && selected != null && (draggingScale || draggingOpacity)) {
+            KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
+            if (element != null) {
+                int x = left() + side() + 12;
+                int cw = left() + px() - 12 - x;
+                updateSliderValue(mx, x, cw, element, draggingScale);
+                return true;
+            }
+        }
+        return super.mouseDragged(mx, my, button, dx, dy);
+    }
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int button) {
+        if (button == 0 && (draggingScale || draggingOpacity)) {
+            draggingScale = false;
+            draggingOpacity = false;
+            KalanHudLayoutStore.save();
+            return true;
+        }
+        return super.mouseReleased(mx, my, button);
     }
 
     @Override
