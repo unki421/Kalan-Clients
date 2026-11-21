@@ -91,14 +91,14 @@ public final class KalanClickGuiScreen extends Screen {
         c.fill(x+sw+10,y+77,x+w-12,y+78,LINE);
 
         if(selected!=null) renderSettings(c,cx,y,cw,h);
-        else renderCards(c,cx,y,cw,h);
+        else renderCards(c,cx,y,cw,h,mx,my);
 
         txt(c,"KALAN CLIENT  •  "+(mc.player==null?"MENU":mc.player.getName().getString()),
                 x+sw+18,y+h-22,MUTED);
         txt(c,"RIGHT SHIFT",x+w-103,y+h-22,PURPLE_LIGHT);
     }
 
-    private void renderCards(DrawContext c,int x,int y,int cw,int h) {
+    private void renderCards(DrawContext c,int x,int y,int cw,int h,int mouseX,int mouseY) {
         List<KalanClickGuiEntry> entries=visibleEntries();
         if(entries.isEmpty()) { txt(c,"Ничего не найдено",x+20,y+112,MUTED); return; }
         int gap=11, cols=cw>=570?3:cw>=370?2:1;
@@ -110,7 +110,7 @@ public final class KalanClickGuiScreen extends Screen {
             if(ay+cardH<y+82 || ay>bottom) continue;
             KalanClickGuiEntry e=entries.get(i);
             boolean on=e.isEnabled();
-            boolean hover=KalanClickGuiLayout.contains((int)mouseX,(int)mouseY,ax,ay,cardW,cardH);
+            boolean hover=KalanClickGuiLayout.contains(mouseX,mouseY,ax,ay,cardW,cardH);
             rounded(c,ax,ay,cardW,cardH,14,hover?PURPLE_LIGHT:0xFF7650A6);
             rounded(c,ax+2,ay+2,cardW-4,cardH-4,12,CARD);
             rounded(c,ax+10,ay+9,cardW-20,34,10,CARD_TOP);
