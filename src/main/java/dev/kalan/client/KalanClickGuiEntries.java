@@ -1,4 +1,3 @@
-
 package dev.kalan.client;
 
 import java.util.ArrayList;
@@ -13,14 +12,8 @@ public final class KalanClickGuiEntries {
     static {
         register(new KalanClickGuiEntry(
                 "Watermark",
-                "Название клиента на экране",
+                "Название клиента, ник, FPS, ping и время",
                 KalanHudPanel.WATERMARK
-        ));
-
-        register(new KalanClickGuiEntry(
-                "Info",
-                "FPS и другая информация",
-                KalanHudPanel.INFO
         ));
 
         register(new KalanClickGuiEntry(
