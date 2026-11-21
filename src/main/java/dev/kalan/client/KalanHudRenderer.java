@@ -90,10 +90,10 @@ public final class KalanHudRenderer {
         String playerText = "PLAYER: " + username;
         String metricsText = fpsText + "    " + pingText + "    " + timeText;
 
-        int brandWidth = Math.max(190, client.textRenderer.getWidth(playerText) + 76);
+        int brandWidth = Math.max(164, client.textRenderer.getWidth(playerText) + 60);
         int metricsWidth = client.textRenderer.getWidth(metricsText) + 28;
         int width = Math.max(brandWidth, metricsWidth);
-        int height = 78;
+        int height = 62;
 
         prepareElement(element, context, width, height);
         float opacity = element.getOpacity();
@@ -138,7 +138,7 @@ public final class KalanHudRenderer {
                         client.textRenderer.getWidth(direction)
                 ) + 22
         );
-        int height = 50;
+        int height = 36;
 
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
@@ -147,11 +147,11 @@ public final class KalanHudRenderer {
         context.getMatrices().translate(element.getX(), element.getY(), 0.0);
         context.getMatrices().scale(element.getScale(), element.getScale(), 1.0f);
 
-        context.drawTextWithShadow(client.textRenderer, "⌖  XYZ", 9, 5,
+        context.drawTextWithShadow(client.textRenderer, "⌖  XYZ", 9, 2,
                 withOpacity(ACCENT, element.getOpacity()));
-        context.drawTextWithShadow(client.textRenderer, coordinates, 10, 18,
+        context.drawTextWithShadow(client.textRenderer, coordinates, 10, 15,
                 withOpacity(WHITE, element.getOpacity()));
-        context.drawTextWithShadow(client.textRenderer, "✥  " + direction, 10, 32,
+        context.drawTextWithShadow(client.textRenderer, "✥  " + direction, 10, 27,
                 withOpacity(MUTED, element.getOpacity()));
 
         context.getMatrices().pop();
@@ -164,7 +164,7 @@ public final class KalanHudRenderer {
         }
 
         int width = 96;
-        int height = 82;
+        int height = 96;
 
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
@@ -175,12 +175,12 @@ public final class KalanHudRenderer {
 
         context.drawTextWithShadow(client.textRenderer, "KEYSTROKES", 9, 4,
                 withOpacity(ACCENT, element.getOpacity()));
-        drawKey(context, client, "W", 40, 19, client.options.forwardKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "A", 21, 37, client.options.leftKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "S", 40, 37, client.options.backKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "D", 59, 37, client.options.rightKey.isPressed(), element.getOpacity());
-        drawKey(context, client, "LMB", 8, 57, client.options.attackKey.isPressed(), element.getOpacity(), 38);
-        drawKey(context, client, "RMB", 50, 57, client.options.useKey.isPressed(), element.getOpacity(), 38);
+        drawKey(context, client, "W", 40, 24, client.options.forwardKey.isPressed(), element.getOpacity());
+        drawKey(context, client, "A", 21, 43, client.options.leftKey.isPressed(), element.getOpacity());
+        drawKey(context, client, "S", 40, 43, client.options.backKey.isPressed(), element.getOpacity());
+        drawKey(context, client, "D", 59, 43, client.options.rightKey.isPressed(), element.getOpacity());
+        drawKey(context, client, "LMB", 8, 63, client.options.attackKey.isPressed(), element.getOpacity(), 38);
+        drawKey(context, client, "RMB", 50, 63, client.options.useKey.isPressed(), element.getOpacity(), 38);
 
         context.getMatrices().pop();
     }
@@ -326,7 +326,7 @@ public final class KalanHudRenderer {
         }
 
         int width = 112;
-        int height = 42;
+        int height = 48;
         prepareElement(element, context, width, height);
         drawPanel(context, element, width, height);
 
