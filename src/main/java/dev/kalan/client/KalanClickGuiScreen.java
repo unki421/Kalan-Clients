@@ -11,7 +11,7 @@ public final class KalanClickGuiScreen extends Screen {
     private static final int WIDTH = 520;
     private static final int HEIGHT = 330;
 
-    private static final int BACKGROUND = 0xFF08070D;
+    private static final int BACKGROUND = 0x6608070D;
     private static final int PANEL = 0xFF111019;
     private static final int CARD = 0xFF191622;
     private static final int ACCENT = 0xFFB46CFF;
