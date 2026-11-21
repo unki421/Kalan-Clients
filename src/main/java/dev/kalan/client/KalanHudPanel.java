@@ -6,7 +6,6 @@ public enum KalanHudPanel {
     INFO("Info", "Дополнительная информация"),
     COORDINATES("Coordinates", "Координаты игрока"),
     KEYSTROKES("Keystrokes", "Клавиши WASD"),
-    MOUSE("Mouse", "ЛКМ и ПКМ"),
     POTIONS("Potions", "Активные эффекты зелий"),
     ARMOR("Armor", "Надетая броня и её прочность"),
     TARGET_HUD("Target HUD", "Информация о последнем атакованном противнике"),
