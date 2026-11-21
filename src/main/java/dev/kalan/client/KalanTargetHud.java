@@ -19,13 +19,13 @@ import net.minecraft.util.Identifier;
 public final class KalanTargetHud {
     private static final Identifier LAYER_ID = Identifier.of(KalanClient.MOD_ID, "target_hud");
     private static final long DISPLAY_TIME_MS = 15_000L;
-    private static final int ACCENT = 0xFFB56BFF;
-    private static final int BACKGROUND = 0xE6100C1B;
-    private static final int OUTLINE = 0xFF70439B;
+    private static final int ACCENT = 0xFF9B62F5;
+    private static final int BACKGROUND = 0xE60D0A14;
+    private static final int OUTLINE = 0xFF6842A0;
     private static final int WHITE = 0xFFF4EDFF;
     private static final int MUTED = 0xFFB8A9C9;
     private static final int DIVIDER = 0xFF392747;
-    private static final int TILE = 0xFF241B30;
+    private static final int TILE = 0xFF211B2A;
     private static LivingEntity target;
     private static long lastHitTime;
     private static boolean initialized;
