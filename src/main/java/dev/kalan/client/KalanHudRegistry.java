@@ -20,7 +20,9 @@ public final class KalanHudRegistry {
         register(new KalanHudElement(KalanHudPanel.ARRAY_LIST, 688, 118));
         register(new KalanHudElement(KalanHudPanel.TARGET_HUD, 695, 307));
         register(new KalanHudElement(KalanHudPanel.ARMOR, 705, 380));
-        find(KalanHudPanel.INFO).setVisible(false);\n        // Mouse buttons are already integrated into the Keystrokes panel in the reference.\n        find(KalanHudPanel.MOUSE).setVisible(false);
+        find(KalanHudPanel.INFO).setVisible(false);
+        // Mouse buttons are already integrated into the Keystrokes panel in the reference.
+        find(KalanHudPanel.MOUSE).setVisible(false);
     }
     private KalanHudRegistry() {
     }
