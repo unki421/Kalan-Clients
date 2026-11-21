@@ -13,7 +13,6 @@ public final class KalanClickGuiEntries {
         register(HUD_ENTRIES, KalanHudPanel.WATERMARK);
         register(HUD_ENTRIES, KalanHudPanel.COORDINATES);
         register(HUD_ENTRIES, KalanHudPanel.KEYSTROKES);
-        register(HUD_ENTRIES, KalanHudPanel.MOUSE);
         register(HUD_ENTRIES, KalanHudPanel.POTIONS);
         register(HUD_ENTRIES, KalanHudPanel.ARMOR);
         register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
