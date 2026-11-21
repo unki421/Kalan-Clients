@@ -11,8 +11,8 @@ import org.lwjgl.glfw.GLFW;
 
 public final class KalanClickGuiScreen extends Screen {
 
-    private static final int WIDTH = 540;
-    private static final int HEIGHT = 350;
+    private static final int WIDTH = 720;
+    private static final int HEIGHT = 470;
     private static final int BACKDROP = 0x9906030D;
     private static final int PANEL = 0xFF100D18;
     private static final int SIDEBAR = 0xFF0B0911;
@@ -77,9 +77,10 @@ public final class KalanClickGuiScreen extends Screen {
         rounded(context, x + 1, y + 1, w - 2, h - 2, 14, 0xFF100D18);
 
         // Brand and compact category rail.
-        drawText(context, "K", x + 20, y + 16, ACCENT);
-        drawText(context, "KALAN", x + 35, y + 16, WHITE);
-        drawText(context, "CLIENT", x + 35, y + 29, MUTED);
+        rounded(context, x + 10, y + 9, side - 16, 34, 9, 0xFF21172F);
+        drawText(context, "✦", x + 19, y + 17, ACCENT);
+        drawText(context, "KALAN", x + 36, y + 13, WHITE);
+        drawText(context, "CLIENT", x + 36, y + 26, MUTED);
 
         rounded(context, x + 10, y + 48, side - 16, h - 60, 12, SIDEBAR);
         renderCategories(context, x, y, side, h);
@@ -101,8 +102,10 @@ public final class KalanClickGuiScreen extends Screen {
             renderEntries(context, contentX, y, contentWidth, h);
         }
 
-        drawText(context, "Right Shift  •  Fabric 1.21.4",
-                x + 15, y + h - 17, 0xFF77717F);
+        String playerName = client.player == null ? "Not in world" : client.player.getName().getString();
+        drawText(context, "Player: " + playerName,
+                x + side + 14, y + h - 17, 0xFF77717F);
+        drawText(context, "Right Shift", x + w - 76, y + h - 17, ACCENT);
     }
 
     private void renderCategories(DrawContext context, int x, int y, int side, int h) {
@@ -141,8 +144,8 @@ public final class KalanClickGuiScreen extends Screen {
         int gap = 8;
         int columns = contentWidth >= 350 ? 3 : contentWidth >= 230 ? 2 : 1;
         int cardWidth = (contentWidth - (columns - 1) * gap) / columns;
-        int cardHeight = 58;
-        int startY = y + 54;
+        int cardHeight = 70;
+        int startY = y + 58;
         int visibleBottom = y + panelHeight - 27;
 
         for (int i = 0; i < entries.size(); i++) {
