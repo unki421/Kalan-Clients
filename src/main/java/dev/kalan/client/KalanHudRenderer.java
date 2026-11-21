@@ -14,7 +14,6 @@ import net.minecraft.util.Identifier;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public final class KalanHudRenderer {
