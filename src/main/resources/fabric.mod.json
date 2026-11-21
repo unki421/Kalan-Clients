@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "kalan_client",
+  "version": "${version}",
+  "name": "Kalan Client",
+  "description": "Kalan Client visual customization mod.",
+  "authors": [
+    "Kalan"
+  ],
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.kalan.client.KalanClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
