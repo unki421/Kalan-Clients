@@ -165,17 +165,23 @@ public final class KalanClickGuiScreen extends Screen {
             rounded(c, ax + 8, ay + 29, 29, 12, 7,
                     enabled ? PURPLE : 0xFF393342);
             rounded(c, ax + (enabled ? 25 : 10), ay + 31, 8, 8, 5, 0xFFFFFFFF);
-            txt(c, "☷", ax + cardW - 18, ay + 28, PURPLE_LIGHT);
-
-            if (hover) {
-                rounded(c, ax + 2, ay + 2, cardW - 4, 2, 1, PURPLE_LIGHT);
-            }
+            drawSettingsIcon(c, ax + cardW - 25, ay + 29, PURPLE_LIGHT);
         }
 
         int rows = (entries.size() + cols - 1) / cols;
         int visibleHeight = bottom - start;
         int maxScroll = Math.max(0, rows * (cardH + gap) - visibleHeight);
         scroll = Math.max(0, Math.min(scroll, maxScroll));
+    }
+
+    private void drawSettingsIcon(DrawContext c, int x, int y, int color) {
+        // Three real slider tracks, matching the reference's settings glyph.
+        c.fill(x, y + 2, x + 14, y + 4, color);
+        c.fill(x, y + 7, x + 14, y + 9, color);
+        c.fill(x, y + 12, x + 14, y + 14, color);
+        rounded(c, x + 3, y, 4, 6, 2, WHITE);
+        rounded(c, x + 9, y + 5, 4, 6, 2, WHITE);
+        rounded(c, x + 5, y + 10, 4, 6, 2, WHITE);
     }
 
     private void renderSettings(DrawContext c, int x, int y, int cw, int h) {
