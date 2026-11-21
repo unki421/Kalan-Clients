@@ -468,7 +468,7 @@ public final class KalanHudRenderer {
             }
         }
 
-        enabled.sort(Comparator.comparing(String::toLowerCase));
+        enabled.sort(String.CASE_INSENSITIVE_ORDER);
 
         int width = 92;
         for (String name : enabled) {
