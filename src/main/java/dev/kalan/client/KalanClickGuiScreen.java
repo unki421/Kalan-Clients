@@ -10,383 +10,209 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class KalanClickGuiScreen extends Screen {
+    private static final int W = 840, H = 520;
+    private static final int OVERLAY = 0x9906030D;
+    private static final int PANEL = 0xF50D0A15;
+    private static final int SIDEBAR = 0xFF100C19;
+    private static final int CARD = 0xFF1B1724;
+    private static final int CARD_TOP = 0xFF27212F;
+    private static final int PURPLE = 0xFF9B4DFF;
+    private static final int PURPLE_DARK = 0xFF4B267A;
+    private static final int WHITE = 0xFFF5F0FF;
+    private static final int MUTED = 0xFFAAA0B9;
+    private static final int LINE = 0xFF39264E;
 
-    private static final int WIDTH = 720;
-    private static final int HEIGHT = 470;
-    private static final int BACKDROP = 0x9906030D;
-    private static final int PANEL = 0xFF100D18;
-    private static final int SIDEBAR = 0xFF0B0911;
-    private static final int CARD = 0xFF1A1820;
-    private static final int CARD_HEADER = 0xFF29272D;
-    private static final int ACCENT = 0xFF9B62F5;
-    private static final int ACCENT_DARK = 0xFF58358B;
-    private static final int WHITE = 0xFFF5F1FA;
-    private static final int MUTED = 0xFFAAA4B4;
-    private static final int TRACK_OFF = 0xFF39363F;
-
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final MinecraftClient mc = MinecraftClient.getInstance();
     private KalanClickGuiCategory category = KalanClickGuiCategory.HUD;
     private KalanClickGuiEntry selected;
     private String search = "";
-    private int scrollOffset;
+    private int scroll;
+    private boolean dragging;
+    private int dragX, dragY;
 
-    public KalanClickGuiScreen() {
-        super(Text.literal("Kalan Client"));
+    public KalanClickGuiScreen() { super(Text.literal("Kalan Client")); }
+
+    private int px() { return Math.min(W, Math.max(300, width - 28)); }
+    private int py() { return Math.min(H, Math.max(240, height - 28)); }
+    private int left() { return (width - px()) / 2; }
+    private int top() { return (height - py()) / 2; }
+    private int side() { return Math.max(66, Math.min(78, px() / 9)); }
+    private void txt(DrawContext c, String s, int x, int y, int color) {
+        c.drawTextWithShadow(mc.textRenderer, s, x, y, color);
+    }
+    private int textW(String s) { return mc.textRenderer.getWidth(s); }
+
+    @Override public void renderBackground(DrawContext c, int mx, int my, float delta) {
+        c.fill(0, 0, width, height, OVERLAY);
     }
 
-    private int panelWidth() {
-        return Math.min(WIDTH, Math.max(300, width - 16));
-    }
+    @Override public void render(DrawContext c, int mx, int my, float delta) {
+        super.render(c, mx, my, delta);
+        int x=left(), y=top(), w=px(), h=py(), sw=side();
+        rounded(c,x,y,w,h,18,PANEL);
+        rounded(c,x+1,y+1,w-2,h-2,17,0xFF0E0B15);
+        rounded(c,x+8,y+8,sw-14,h-16,14,SIDEBAR);
 
-    private int panelHeight() {
-        return Math.min(HEIGHT, Math.max(220, height - 16));
-    }
-
-    private int left() {
-        return (width - panelWidth()) / 2;
-    }
-
-    private int top() {
-        return (height - panelHeight()) / 2;
-    }
-
-    private int sidebarWidth() {
-        return Math.max(62, Math.min(78, panelWidth() / 6));
-    }
-
-    private void drawText(DrawContext context, String value, int x, int y, int color) {
-        context.drawTextWithShadow(client.textRenderer, value, x, y, color);
-    }
-
-    @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.fill(0, 0, width, height, BACKDROP);
-    }
-
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-
-        int x = left();
-        int y = top();
-        int w = panelWidth();
-        int h = panelHeight();
-        int side = sidebarWidth();
-
-        rounded(context, x, y, w, h, 15, PANEL);
-        rounded(context, x + 1, y + 1, w - 2, h - 2, 14, 0xFF100D18);
-
-        // Brand and compact category rail.
-        rounded(context, x + 10, y + 9, side - 16, 34, 9, 0xFF21172F);
-        drawText(context, "✦", x + 19, y + 17, ACCENT);
-        drawText(context, "KALAN", x + 36, y + 13, WHITE);
-        drawText(context, "CLIENT", x + 36, y + 26, MUTED);
-
-        rounded(context, x + 10, y + 48, side - 16, h - 60, 12, SIDEBAR);
-        renderCategories(context, x, y, side, h);
-
-        int contentX = x + side + 12;
-        int contentWidth = w - side - 24;
-
-        // Search field.
-        rounded(context, contentX, y + 12, contentWidth, 30, 15, 0xFF08070C);
-        drawText(context, "⌕", contentX + 11, y + 20, MUTED);
-        String searchLabel = search.isEmpty() ? "Search..." : search;
-        drawText(context, searchLabel, contentX + 31, y + 21,
-                search.isEmpty() ? 0xFF77717F : WHITE);
-        drawText(context, "×", contentX + contentWidth - 17, y + 20, MUTED);
-
-        if (selected != null) {
-            renderSettings(context, contentX, y, contentWidth, h);
-        } else {
-            renderEntries(context, contentX, y, contentWidth, h);
+        // Left brand rail.
+        rounded(c,x+14,y+14,sw-26,57,12,0xFF21142F);
+        txt(c,"✦",x+23,y+25,PURPLE);
+        txt(c,"KALAN",x+38,y+20,WHITE);
+        txt(c,"CLIENT",x+38,y+36,MUTED);
+        int idx=0;
+        for(KalanClickGuiCategory cat:KalanClickGuiCategory.values()) {
+            int by=y+88+idx*62;
+            boolean active=category==cat;
+            if(active) rounded(c,x+13,by,sw-24,50,11,0xFF3A205B);
+            String symbol=switch(cat) { case HUD -> "◇"; case COMBAT -> "⚔"; case SETTINGS -> "⚙"; };
+            int tw=textW(symbol);
+            txt(c,symbol,x+13+(sw-24-tw)/2,by+16,active?PURPLE: MUTED);
+            idx++;
         }
 
-        String playerName = client.player == null ? "Not in world" : client.player.getName().getString();
-        drawText(context, "Player: " + playerName,
-                x + side + 14, y + h - 17, 0xFF77717F);
-        drawText(context, "Right Shift", x + w - 76, y + h - 17, ACCENT);
+        int cx=x+sw+16, cw=w-sw-32;
+        // Header search and close button.
+        rounded(c,cx,y+15,cw-48,48,23,0xFF08070D);
+        txt(c,"⌕",cx+17,y+31,PURPLE);
+        txt(c,search.isEmpty()?"Search...":search,cx+43,y+32,search.isEmpty()?0xFF777080:WHITE);
+        rounded(c,x+w-53,y+19,34,39,10,0xFF21152E);
+        txt(c,"×",x+w-42,y+30,PURPLE);
+
+        if(selected!=null) renderSettings(c,cx,y,cw,h);
+        else renderCards(c,cx,y,cw,h);
+
+        String player=mc.player==null?"Not in world":mc.player.getName().getString();
+        txt(c,"Kalan Client  •  Player: "+player,x+sw+18,y+h-22,MUTED);
+        txt(c,"RIGHT SHIFT",x+w-99,y+h-22,PURPLE);
     }
 
-    private void renderCategories(DrawContext context, int x, int y, int side, int h) {
-        int index = 0;
-        for (KalanClickGuiCategory item : KalanClickGuiCategory.values()) {
-            int buttonY = y + 60 + index * 43;
-            boolean active = category == item;
-            int buttonWidth = side - 24;
-            rounded(context, x + 12, buttonY, buttonWidth, 34,
-                    9, active ? 0xFF3A2855 : SIDEBAR);
-            if (active) {
-                rounded(context, x + 12, buttonY + 4, 3, 26, 2, ACCENT);
-            }
-            String symbol = switch (item) {
-                case HUD -> "▦";
-                case COMBAT -> "⚔";
-                case SETTINGS -> "⚙";
-            };
-            int symbolWidth = client.textRenderer.getWidth(symbol);
-            drawText(context, symbol, x + 12 + (buttonWidth - symbolWidth) / 2,
-                    buttonY + 11, active ? ACCENT : MUTED);
-            index++;
+    private void renderCards(DrawContext c,int x,int y,int cw,int h) {
+        List<KalanClickGuiEntry> entries=visibleEntries();
+        if(entries.isEmpty()) { txt(c,"Ничего не найдено",x+20,y+112,MUTED); return; }
+        int gap=13, cols=cw>=600?3:cw>=390?2:1;
+        int cardW=(cw-gap*(cols-1))/cols, cardH=92, start=y+82;
+        int bottom=y+h-42;
+        for(int i=0;i<entries.size();i++) {
+            int col=i%cols,row=i/cols;
+            int ax=x+col*(cardW+gap), ay=start+row*(cardH+gap)-scroll;
+            if(ay+cardH<y+70 || ay>bottom) continue;
+            KalanClickGuiEntry e=entries.get(i);
+            boolean on=e.isEnabled(), hover=KalanClickGuiLayout.contains((int)mouseX,(int)mouseY,ax,ay,cardW,cardH);
+            rounded(c,ax,ay,cardW,cardH,13,on?PURPLE:0xFF65408B);
+            rounded(c,ax+2,ay+2,cardW-4,cardH-4,11,CARD);
+            rounded(c,ax+10,ay+9,cardW-20,34,9,CARD_TOP);
+            String title=trim(e.getTitle(),cardW-38);
+            txt(c,title,ax+(cardW-textW(title))/2,ay+20,WHITE);
+            // Toggle pill, matching the reference.
+            rounded(c,ax+13,ay+57,49,20,10,on?PURPLE:0xFF403A49);
+            rounded(c,ax+(on?39:16),ay+60,14,14,8,0xFFFFFFFF);
+            txt(c,"☷",ax+cardW-29,ay+57,PURPLE);
+            if(hover) rounded(c,ax+1,ay+1,cardW-2,2,1,0xFFB77BFF);
         }
     }
 
-    private void renderEntries(DrawContext context, int x, int y, int contentWidth, int panelHeight) {
-        List<KalanClickGuiEntry> entries = getVisibleEntries();
-        if (entries.isEmpty()) {
-            drawText(context, search.isEmpty()
-                    ? "В этом разделе пока нет функций"
-                    : "Ничего не найдено",
-                    x + 12, y + 100, MUTED);
-            return;
-        }
-
-        int gap = 8;
-        int columns = contentWidth >= 350 ? 3 : contentWidth >= 230 ? 2 : 1;
-        int cardWidth = (contentWidth - (columns - 1) * gap) / columns;
-        int cardHeight = 70;
-        int startY = y + 58;
-        int visibleBottom = y + panelHeight - 27;
-
-        for (int i = 0; i < entries.size(); i++) {
-            KalanClickGuiEntry entry = entries.get(i);
-            int column = i % columns;
-            int row = i / columns;
-            int cardX = x + column * (cardWidth + gap);
-            int cardY = startY + row * (cardHeight + gap);
-            if (cardY + cardHeight > visibleBottom) {
-                continue;
-            }
-
-            boolean enabled = entry.isEnabled();
-            rounded(context, cardX, cardY, cardWidth, cardHeight, 10,
-                    enabled ? ACCENT_DARK : 0xFF26232C);
-            rounded(context, cardX + 2, cardY + 2, cardWidth - 4, cardHeight - 4,
-                    8, CARD);
-            rounded(context, cardX + 8, cardY + 7, cardWidth - 16, 22,
-                    7, CARD_HEADER);
-
-            String title = trim(entry.getTitle(), Math.max(5, cardWidth - 28));
-            int titleWidth = client.textRenderer.getWidth(title);
-            drawText(context, title, cardX + (cardWidth - titleWidth) / 2,
-                    cardY + 14, WHITE);
-
-            // Toggle switch.
-            int toggleX = cardX + 10;
-            int toggleY = cardY + 38;
-            rounded(context, toggleX, toggleY, 30, 13, 7,
-                    enabled ? ACCENT : TRACK_OFF);
-            rounded(context, toggleX + (enabled ? 17 : 2), toggleY + 2, 9, 9,
-                    5, 0xFFFFFFFF);
-
-            // Settings control.
-            drawText(context, "☷", cardX + cardWidth - 21, cardY + 36, WHITE);
-        }
+    private void renderSettings(DrawContext c,int x,int y,int cw,int h) {
+        KalanHudElement e=KalanHudRegistry.find(selected.getPanel());
+        if(e==null) { selected=null; return; }
+        txt(c,"‹",x+12,y+86,PURPLE);
+        txt(c,selected.getTitle(),x+35,y+86,WHITE);
+        txt(c,"НАСТРОЙКИ HUD-ЭЛЕМЕНТА",x+12,y+115,MUTED);
+        drawSlider(c,x,y+160,cw,"Масштаб",e.getScale(),0.5f,2.0f,
+                String.format(Locale.ROOT,"%.1f",e.getScale()));
+        drawSlider(c,x,y+232,cw,"Прозрачность",e.getOpacity(),0.1f,1.0f,
+                Math.round(e.getOpacity()*100)+"%");
+        txt(c,"Изменяй значения нажатием по шкале",x+12,y+292,MUTED);
+        txt(c,"ПКМ / ESC — назад",x+12,y+h-55,PURPLE);
     }
 
-    private List<KalanClickGuiEntry> getVisibleEntries() {
-        List<KalanClickGuiEntry> source = switch (category) {
+    private void drawSlider(DrawContext c,int x,int y,int cw,String label,float value,float min,float max,String valueText) {
+        txt(c,label,x+12,y,WHITE);
+        txt(c,valueText,x+cw-48,y,PURPLE);
+        rounded(c,x+12,y+25,cw-24,8,4,0xFF393141);
+        int fill=Math.round((cw-24)*(value-min)/(max-min));
+        rounded(c,x+12,y+25,Math.max(5,fill),8,4,PURPLE);
+        rounded(c,x+8+fill,y+21,16,16,8,WHITE);
+    }
+
+    private List<KalanClickGuiEntry> visibleEntries() {
+        List<KalanClickGuiEntry> source=switch(category) {
             case HUD -> KalanClickGuiEntries.getHudEntries();
             case COMBAT -> KalanClickGuiEntries.getCombatEntries();
-            case SETTINGS -> List.of();
+            case SETTINGS -> KalanClickGuiEntries.getAll();
         };
-        if (search.isBlank()) {
-            return source;
-        }
-        String query = search.toLowerCase(Locale.ROOT);
-        List<KalanClickGuiEntry> filtered = new ArrayList<>();
-        for (KalanClickGuiEntry entry : source) {
-            if (entry.getTitle().toLowerCase(Locale.ROOT).contains(query)
-                    || entry.getDescription().toLowerCase(Locale.ROOT).contains(query)) {
-                filtered.add(entry);
-            }
-        }
-        return filtered;
+        if(search.isBlank()) return source;
+        List<KalanClickGuiEntry> result=new ArrayList<>();
+        String q=search.toLowerCase(Locale.ROOT);
+        for(KalanClickGuiEntry e:source)
+            if(e.getTitle().toLowerCase(Locale.ROOT).contains(q)||e.getDescription().toLowerCase(Locale.ROOT).contains(q)) result.add(e);
+        return result;
     }
 
-    private String trim(String value, int maxWidth) {
-        if (client.textRenderer.getWidth(value) <= maxWidth) {
-            return value;
-        }
-        String result = value;
-        while (!result.isEmpty() && client.textRenderer.getWidth(result + "…") > maxWidth) {
-            result = result.substring(0, result.length() - 1);
-        }
-        return result + "…";
+    private String trim(String s,int max) {
+        if(textW(s)<=max) return s;
+        while(!s.isEmpty()&&textW(s+"…")>max) s=s.substring(0,s.length()-1);
+        return s+"…";
     }
 
-    private void renderSettings(DrawContext context, int x, int y, int contentWidth, int panelHeight) {
-        KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
-        if (element == null) {
-            selected = null;
-            return;
+    @Override public boolean mouseClicked(double mx,double my,int button) {
+        int x=left(),y=top(),w=px(),h=py(),sw=side(),cx=x+sw+16,cw=w-sw-32;
+        if(button==0&&mx>=x+w-57&&my>=y+15&&my<=y+60){close();return true;}
+        int i=0;
+        for(KalanClickGuiCategory cat:KalanClickGuiCategory.values()){
+            int by=y+88+i*62;
+            if(button==0&&KalanClickGuiLayout.contains((int)mx,(int)my,x+13,by,sw-24,50)){
+                category=cat;selected=null;scroll=0;return true;
+            } i++;
         }
-
-        drawText(context, "‹", x + 8, y + 58, ACCENT);
-        drawText(context, selected.getTitle(), x + 25, y + 58, WHITE);
-        drawText(context, "Настройки HUD-элемента", x + 10, y + 83, MUTED);
-
-        drawText(context, "Масштаб", x + 10, y + 116, WHITE);
-        drawText(context, String.format(Locale.ROOT, "%.1f", element.getScale()),
-                x + contentWidth - 34, y + 116, ACCENT);
-        rounded(context, x + 10, y + 137, contentWidth - 20, 7, 4, TRACK_OFF);
-        int scaleFill = Math.round((element.getScale() - 0.5f) / 1.5f * (contentWidth - 20));
-        rounded(context, x + 10, y + 137, Math.max(4, scaleFill), 7, 4, ACCENT);
-
-        drawText(context, "Прозрачность", x + 10, y + 166, WHITE);
-        drawText(context, Math.round(element.getOpacity() * 100) + "%",
-                x + contentWidth - 34, y + 166, ACCENT);
-        rounded(context, x + 10, y + 187, contentWidth - 20, 7, 4, TRACK_OFF);
-        rounded(context, x + 10, y + 187,
-                Math.max(4, Math.round((contentWidth - 20) * element.getOpacity())),
-                7, 4, ACCENT);
-
-        drawText(context, "Нажми на левую или правую часть шкалы, чтобы изменить значение",
-                x + 10, Math.min(y + panelHeight - 42, y + 220), MUTED);
-        drawText(context, "ПКМ или Esc — назад", x + 10, y + panelHeight - 38, MUTED);
+        if(selected!=null){
+            if(button==1||(button==0&&mx<cx+45&&my<y+105)){selected=null;return true;}
+            if(button==0){
+                KalanHudElement e=KalanHudRegistry.find(selected.getPanel());
+                if(e!=null){
+                    if(my>=y+176&&my<=y+202)e.setScale(e.getScale()+(mx<cx+cw/2?-0.1f:0.1f));
+                    else if(my>=y+248&&my<=y+274)e.setOpacity(e.getOpacity()+(mx<cx+cw/2?-0.1f:0.1f));
+                    KalanHudLayoutStore.save();
+                } return true;
+            } return true;
+        }
+        List<KalanClickGuiEntry> entries=visibleEntries();
+        int gap=13,cols=cw>=600?3:cw>=390?2:1,cardW=(cw-gap*(cols-1))/cols,cardH=92,start=y+82;
+        for(int n=0;n<entries.size();n++){
+            int ax=cx+(n%cols)*(cardW+gap),ay=start+(n/cols)*(cardH+gap)-scroll;
+            if(!KalanClickGuiLayout.contains((int)mx,(int)my,ax,ay,cardW,cardH))continue;
+            KalanClickGuiEntry e=entries.get(n);
+            if(button==1||(button==0&&mx>=ax+cardW-42)){selected=e;return true;}
+            if(button==0){e.toggle();return true;}
+        }
+        return super.mouseClicked(mx,my,button);
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        int x = left();
-        int y = top();
-        int w = panelWidth();
-        int h = panelHeight();
-        int side = sidebarWidth();
-        int contentX = x + side + 12;
-        int contentWidth = w - side - 24;
-
-        if (button == 0 && mouseY >= y + 12 && mouseY <= y + 42
-                && mouseX >= contentX && mouseX <= contentX + contentWidth) {
-            if (mouseX >= contentX + contentWidth - 24) {
-                search = "";
-            }
-            return true;
-        }
-
-        int categoryIndex = 0;
-        for (KalanClickGuiCategory item : KalanClickGuiCategory.values()) {
-            int buttonY = y + 60 + categoryIndex * 43;
-            if (button == 0 && KalanClickGuiLayout.contains((int) mouseX, (int) mouseY,
-                    x + 12, buttonY, side - 24, 34)) {
-                category = item;
-                selected = null;
-                return true;
-            }
-            categoryIndex++;
-        }
-
-        if (selected != null) {
-            if (button == 1 || (button == 0 && mouseX < contentX + 24
-                    && mouseY < y + 75)) {
-                selected = null;
-                return true;
-            }
-            if (button == 0) {
-                changeSetting(mouseX, mouseY, contentX, y, contentWidth);
-                return true;
-            }
-            return true;
-        }
-
-        List<KalanClickGuiEntry> entries = getVisibleEntries();
-        int columns = contentWidth >= 350 ? 3 : contentWidth >= 230 ? 2 : 1;
-        int gap = 8;
-        int cardWidth = (contentWidth - (columns - 1) * gap) / columns;
-        int cardHeight = 70;
-        int startY = y + 58;
-
-        for (int i = 0; i < entries.size(); i++) {
-            int column = i % columns;
-            int row = i / columns;
-            int cardX = contentX + column * (cardWidth + gap);
-            int cardY = startY + row * (cardHeight + gap);
-            if (!KalanClickGuiLayout.contains((int) mouseX, (int) mouseY,
-                    cardX, cardY, cardWidth, cardHeight)) {
-                continue;
-            }
-
-            KalanClickGuiEntry entry = entries.get(i);
-            if (button == 0) {
-                if (mouseX >= cardX + cardWidth - 32) {
-                    selected = entry;
-                } else {
-                    entry.toggle();
-                }
-            } else if (button == 1) {
-                selected = entry;
-            }
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
+    @Override public boolean mouseScrolled(double mx,double my,double horizontal,double vertical) {
+        scroll=Math.max(0,Math.min(1000,scroll-(int)(vertical*28)));
+        return true;
     }
 
-    private void changeSetting(double mouseX, double mouseY, int x, int y, int contentWidth) {
-        KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
-        if (element == null) {
-            return;
-        }
-
-        if (mouseY >= y + 128 && mouseY <= y + 151) {
-            float value = mouseX < x + contentWidth / 2
-                    ? element.getScale() - 0.1f : element.getScale() + 0.1f;
-            element.setScale(value);
-        } else if (mouseY >= y + 178 && mouseY <= y + 201) {
-            float value = mouseX < x + contentWidth / 2
-                    ? element.getOpacity() - 0.1f : element.getOpacity() + 0.1f;
-            element.setOpacity(value);
-        }
-        KalanHudLayoutStore.save();
+    @Override public boolean charTyped(char chr,int modifiers) {
+        if(selected==null&&!Character.isISOControl(chr)&&search.length()<32){search+=chr;return true;}
+        return super.charTyped(chr,modifiers);
     }
 
-    @Override
-    public boolean charTyped(char chr, int modifiers) {
-        if (selected == null && !Character.isISOControl(chr) && search.length() < 32) {
-            search += chr;
-            return true;
-        }
-        return super.charTyped(chr, modifiers);
+    @Override public boolean keyPressed(int key,int scan,int modifiers) {
+        if(key==GLFW.GLFW_KEY_ESCAPE){if(selected!=null)selected=null;else close();return true;}
+        if(selected==null&&key==GLFW.GLFW_KEY_BACKSPACE&&!search.isEmpty()){search=search.substring(0,search.length()-1);return true;}
+        return super.keyPressed(key,scan,modifiers);
     }
+    @Override public void close(){selected=null;mc.setScreen(null);}
+    @Override public boolean shouldPause(){return false;}
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            if (selected != null) {
-                selected = null;
-            } else {
-                close();
-            }
-            return true;
-        }
-        if (selected == null && keyCode == GLFW.GLFW_KEY_BACKSPACE && !search.isEmpty()) {
-            search = search.substring(0, search.length() - 1);
-            return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public void close() {
-        selected = null;
-        client.setScreen(null);
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
-    }
-
-    private static void rounded(DrawContext context, int x, int y,
-                                int width, int height, int radius, int color) {
-        if (width <= 0 || height <= 0) return;
-        int r = Math.max(1, Math.min(radius, Math.min(width, height) / 2));
-        context.fill(x + r, y, x + width - r, y + height, color);
-        for (int row = 0; row < r; row++) {
-            double d = r - row - 0.5;
-            int inset = r - (int) Math.floor(Math.sqrt(r * r - d * d));
-            context.fill(x + inset, y + row, x + width - inset, y + row + 1, color);
-            context.fill(x + inset, y + height - row - 1,
-                    x + width - inset, y + height - row, color);
+    private static void rounded(DrawContext c,int x,int y,int w,int h,int r,int color) {
+        if(w<=0||h<=0)return;
+        int radius=Math.max(1,Math.min(r,Math.min(w,h)/2));
+        c.fill(x+radius,y,x+w-radius,y+h,color);
+        for(int row=0;row<radius;row++){
+            double d=radius-row-0.5;
+            int inset=radius-(int)Math.floor(Math.sqrt(radius*radius-d*d));
+            c.fill(x+inset,y+row,x+w-inset,y+row+1,color);
+            c.fill(x+inset,y+h-row-1,x+w-inset,y+h-row,color);
         }
     }
 }
