@@ -1,11 +1,6 @@
 name: Build Kalan Client
 
 on:
-  push:
-    branches:
-      - main
-      - feature/target-hud
-  pull_request:
   workflow_dispatch:
 
 permissions:
