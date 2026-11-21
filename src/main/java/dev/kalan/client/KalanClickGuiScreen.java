@@ -11,6 +11,13 @@ public final class KalanClickGuiScreen extends Screen {
     private static final int WIDTH = 520;
     private static final int HEIGHT = 330;
 
+    private static final int BACKGROUND = 0xFF08070D;
+    private static final int PANEL = 0xFF111019;
+    private static final int CARD = 0xFF191622;
+    private static final int ACCENT = 0xFFB46CFF;
+    private static final int WHITE = 0xFFF4F0FA;
+    private static final int MUTED = 0xFFAAA3B8;
+
     private KalanClickGuiCategory category = KalanClickGuiCategory.HUD;
     private KalanClickGuiEntry selected;
 
@@ -40,28 +47,42 @@ public final class KalanClickGuiScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(DrawContext context,
+                                 int mouseX, int mouseY,
+                                 float delta) {
+        context.fill(0, 0, width, height, BACKGROUND);
+    }
+
+    @Override
     public void render(DrawContext context, int mouseX,
                        int mouseY, float delta) {
 
-        context.fill(0, 0, width, height, 0x99000000);
+        // Сначала стандартная отрисовка экрана.
+        // После неё рисуем интерфейс поверх неё.
+        super.render(context, mouseX, mouseY, delta);
+
+        // Полностью непрозрачный фон без размытия.
+        context.fill(0, 0, width, height, BACKGROUND);
 
         int x = left();
         int y = top();
 
+        // Основная панель.
         context.fill(x, y, x + WIDTH, y + HEIGHT, 0xFF0B0A10);
-        context.fill(x, y, x + WIDTH, y + 3, 0xFFB46CFF);
+        context.fill(x, y, x + WIDTH, y + 3, ACCENT);
 
-        context.fill(x, y + 3, x + 120, y + HEIGHT, 0xFF111019);
+        // Боковая панель.
+        context.fill(x, y + 3, x + 120, y + HEIGHT, PANEL);
 
-        text(context, "KALAN", x + 18, y + 17, 0xFFB46CFF);
-        text(context, "CLIENT", x + 65, y + 17, 0xFFF4F0FA);
-
-        text(context, "Right Shift", x + 18, y + 36, 0xFFAAA3B8);
-
+        // Верхняя панель.
         context.fill(x + 120, y + 3, x + WIDTH, y + 44, 0xFF15131D);
 
+        text(context, "KALAN", x + 18, y + 17, ACCENT);
+        text(context, "CLIENT", x + 65, y + 17, WHITE);
+        text(context, "Right Shift", x + 18, y + 36, MUTED);
+
         text(context, category.getTitle(),
-                x + 140, y + 18, 0xFFF4F0FA);
+                x + 140, y + 18, WHITE);
 
         text(context, "X", x + WIDTH - 25, y + 17, 0xFFFF8B9B);
 
@@ -75,8 +96,6 @@ public final class KalanClickGuiScreen extends Screen {
 
         text(context, "Kalan Client | Fabric 1.21.4",
                 x + 15, y + HEIGHT - 18, 0xFF777080);
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void renderCategories(DrawContext context, int x, int y) {
@@ -84,7 +103,6 @@ public final class KalanClickGuiScreen extends Screen {
 
         for (KalanClickGuiCategory item : KalanClickGuiCategory.values()) {
             int buttonY = y + 65 + index * 38;
-
             boolean active = category == item;
 
             context.fill(
@@ -92,7 +110,7 @@ public final class KalanClickGuiScreen extends Screen {
                     buttonY - 5,
                     x + 110,
                     buttonY + 23,
-                    active ? 0xFF30203F : 0xFF111019
+                    active ? 0xFF30203F : PANEL
             );
 
             if (active) {
@@ -101,7 +119,7 @@ public final class KalanClickGuiScreen extends Screen {
                         buttonY - 5,
                         x + 13,
                         buttonY + 23,
-                        0xFFB46CFF
+                        ACCENT
                 );
             }
 
@@ -110,7 +128,7 @@ public final class KalanClickGuiScreen extends Screen {
                     item.getTitle(),
                     x + 20,
                     buttonY + 4,
-                    active ? 0xFFB46CFF : 0xFFAAA3B8
+                    active ? ACCENT : MUTED
             );
 
             index++;
@@ -124,7 +142,7 @@ public final class KalanClickGuiScreen extends Screen {
                     "В этом разделе пока нет элементов",
                     x + 145,
                     y + 100,
-                    0xFFAAA3B8
+                    MUTED
             );
             return;
         }
@@ -145,7 +163,7 @@ public final class KalanClickGuiScreen extends Screen {
                     entryY,
                     entryX + 160,
                     entryY + 52,
-                    0xFF191622
+                    CARD
             );
 
             context.fill(
@@ -153,7 +171,7 @@ public final class KalanClickGuiScreen extends Screen {
                     entryY,
                     entryX + 160,
                     entryY + 1,
-                    enabled ? 0xFFB46CFF : 0xFF30283F
+                    enabled ? ACCENT : 0xFF30283F
             );
 
             text(
@@ -161,7 +179,7 @@ public final class KalanClickGuiScreen extends Screen {
                     entry.getTitle(),
                     entryX + 9,
                     entryY + 9,
-                    0xFFF4F0FA
+                    WHITE
             );
 
             text(
@@ -169,7 +187,7 @@ public final class KalanClickGuiScreen extends Screen {
                     enabled ? "ON" : "OFF",
                     entryX + 9,
                     entryY + 29,
-                    enabled ? 0xFFB46CFF : 0xFF777080
+                    enabled ? ACCENT : 0xFF777080
             );
 
             text(
@@ -177,7 +195,7 @@ public final class KalanClickGuiScreen extends Screen {
                     "ПКМ: настройки",
                     entryX + 70,
                     entryY + 29,
-                    0xFFAAA3B8
+                    MUTED
             );
 
             index++;
@@ -194,24 +212,24 @@ public final class KalanClickGuiScreen extends Screen {
         }
 
         text(context, selected.getTitle(),
-                x + 145, y + 70, 0xFFB46CFF);
+                x + 145, y + 70, ACCENT);
 
         text(context, "Масштаб: " +
                 String.format("%.1f", element.getScale()),
-                x + 145, y + 105, 0xFFF4F0FA);
+                x + 145, y + 105, WHITE);
 
         text(context, "[-] уменьшить       [+] увеличить",
-                x + 145, y + 125, 0xFFAAA3B8);
+                x + 145, y + 125, MUTED);
 
         text(context, "Прозрачность: " +
                 String.format("%.1f", element.getOpacity()),
-                x + 145, y + 165, 0xFFF4F0FA);
+                x + 145, y + 165, WHITE);
 
         text(context, "[-] уменьшить       [+] увеличить",
-                x + 145, y + 185, 0xFFAAA3B8);
+                x + 145, y + 185, MUTED);
 
-        text(context, "Нажми ESC или ПКМ вне настроек, чтобы вернуться",
-                x + 145, y + 230, 0xFFAAA3B8);
+        text(context, "Нажми ПКМ, чтобы вернуться",
+                x + 145, y + 230, MUTED);
     }
 
     @Override
