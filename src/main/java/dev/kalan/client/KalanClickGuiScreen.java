@@ -271,6 +271,8 @@ public final class KalanClickGuiScreen extends Screen {
                 renderCustomCrosshairSettings(c, x, bodyY, cw, bodyH);
             } else if (selected.getVisualFeature() == KalanVisualFeature.HIT_PARTICLES) {
                 renderHitParticlesSettings(c, x, bodyY, cw, bodyH);
+            } else if (selected.getVisualFeature() == KalanVisualFeature.TARGET_ESP) {
+                renderTargetEspSettings(c, x, bodyY, cw, bodyH);
             } else {
                 renderSnowSettings(c, x, bodyY, cw, bodyH);
             }
@@ -418,6 +420,26 @@ public final class KalanClickGuiScreen extends Screen {
         drawValueControl(c, x + cw - 112, bodyY + 136, config.getHitParticlesAmount() + " шт.");
         txt(c, "Эффект появляется возле атакованной цели", x + 10, bodyY + 190, MUTED);
         txt(c, "Работает только визуально на клиенте", x + 10, bodyY + 208, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderTargetEspSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        KalanConfig config = KalanConfig.get();
+        String[] styles = {"КРУГ", "РОМБ", "DOUBLE / ORBIT"};
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Target ESP", x + 24, bodyY + 14, WHITE);
+        txt(c, "АНИМАЦИЯ ВОКРУГ ЦЕЛИ ПОД ПРИЦЕЛОМ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Форма", x + 10, bodyY + 76, WHITE);
+        box(c, x + 10, bodyY + 94, cw - 20, 30, 7, CARD_BG, CARD_BORDER_ACTIVE);
+        txt(c, styles[config.getTargetEspStyle()] + "  ·  Сменить", x + 18, bodyY + 104, ACCENT_LIGHT);
+        txt(c, "Цвет", x + 10, bodyY + 142, WHITE);
+        box(c, x + cw - 86, bodyY + 132, 76, 28, 7, config.getTargetEspColor(), CARD_BORDER_ACTIVE);
+        txt(c, "Сменить", x + cw - 80, bodyY + 141, WHITE);
+        txt(c, "Размер", x + 10, bodyY + 184, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 172, String.format(Locale.ROOT, "%.1fx", config.getTargetEspSize()));
+        txt(c, "Скорость", x + 10, bodyY + 226, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 214, String.format(Locale.ROOT, "%.1fx", config.getTargetEspSpeed()));
+        txt(c, "Отображается только на выбранной цели", x + 10, bodyY + 250, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -594,6 +616,19 @@ public final class KalanClickGuiScreen extends Screen {
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 136, 102, 28)) {
                         KalanHitParticles.adjustAmount(mx < cx + cw - 62 ? -1 : 1);
                         return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.TARGET_ESP) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 10, bodyY + 94, cw - 20, 30)) {
+                        KalanTargetEsp.cycleStyle(); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 86, bodyY + 132, 76, 28)) {
+                        KalanTargetEsp.cycleColor(); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 172, 102, 28)) {
+                        KalanTargetEsp.adjustSize(mx < cx + cw - 62 ? -0.1f : 0.1f); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 214, 102, 28)) {
+                        KalanTargetEsp.adjustSpeed(mx < cx + cw - 62 ? -0.1f : 0.1f); return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.SNOW) {
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 64, 102, 28)) {
