@@ -11,12 +11,18 @@ public final class KalanClickGuiEntries {
     private static final List<KalanClickGuiEntry> VISUAL_ENTRIES = new ArrayList<>();
 
     static {
-        register(HUD_ENTRIES, KalanHudPanel.WATERMARK);
-        register(HUD_ENTRIES, KalanHudPanel.COORDINATES);
-        register(HUD_ENTRIES, KalanHudPanel.KEYSTROKES);
-        register(HUD_ENTRIES, KalanHudPanel.POTIONS);
-        register(HUD_ENTRIES, KalanHudPanel.ARMOR);
-        register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
+        HUD_ENTRIES.add(new KalanClickGuiEntry(
+                "HUD",
+                "Общий переключатель HUD; ПКМ открывает настройки компонентов",
+                List.of(
+                        KalanHudPanel.WATERMARK,
+                        KalanHudPanel.COORDINATES,
+                        KalanHudPanel.KEYSTROKES,
+                        KalanHudPanel.POTIONS,
+                        KalanHudPanel.ARMOR,
+                        KalanHudPanel.ARRAY_LIST
+                )
+        ));
 
         COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_CROSSHAIR));
         COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.HIT_PARTICLES));
