@@ -33,6 +33,8 @@ public final class KalanConfig {
     private int chinaHatColor = 0xFFFFAA00;
     private float chinaHatSize = 1.0f;
     private float chinaHatHeight = 0.0f;
+    private boolean blockHighlightEnabled = false;
+    private int blockHighlightColor = 0x8855AAFF;
 
     private KalanConfig() {
     }
@@ -65,6 +67,7 @@ public final class KalanConfig {
         chinaHatSize = clamp(chinaHatSize, 0.5f, 2.0f);
         chinaHatHeight = clamp(chinaHatHeight, -0.5f, 0.8f);
         if (chinaHatColor == 0) chinaHatColor = 0xFFFFAA00;
+        if (blockHighlightColor == 0) blockHighlightColor = 0x8855AAFF;
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -148,6 +151,11 @@ public final class KalanConfig {
     public void setChinaHatSize(float value) { chinaHatSize = clamp(value, 0.5f, 2.0f); save(); }
     public float getChinaHatHeight() { return chinaHatHeight; }
     public void setChinaHatHeight(float value) { chinaHatHeight = clamp(value, -0.5f, 0.8f); save(); }
+
+    public boolean isBlockHighlightEnabled() { return blockHighlightEnabled; }
+    public void setBlockHighlightEnabled(boolean value) { blockHighlightEnabled = value; save(); }
+    public int getBlockHighlightColor() { return blockHighlightColor; }
+    public void setBlockHighlightColor(int value) { blockHighlightColor = value; save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
