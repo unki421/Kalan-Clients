@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.kalan.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "KalanChatSuggestionsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
