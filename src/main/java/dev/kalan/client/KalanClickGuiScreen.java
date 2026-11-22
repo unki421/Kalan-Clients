@@ -256,6 +256,10 @@ public final class KalanClickGuiScreen extends Screen {
     }
 
     private void renderSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        if (selected.isHudGroup()) {
+            renderHudGroupSettings(c, x, bodyY, cw, bodyH);
+            return;
+        }
         if (selected.getVisualFeature() != null) {
             if (selected.getVisualFeature() == KalanVisualFeature.CUSTOM_SKY) {
                 renderCustomSkySettings(c, x, bodyY, cw, bodyH);
@@ -294,6 +298,31 @@ public final class KalanClickGuiScreen extends Screen {
                 0.1f, 1.0f, Math.round(element.getOpacity() * 100) + "%");
 
         txt(c, "Перетаскивай ползунок для изменения", x + 8, bodyY + 178, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderHudGroupSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "HUD", x + 24, bodyY + 14, WHITE);
+        txt(c, "УПРАВЛЕНИЕ КОМПОНЕНТАМИ HUD", x + 8, bodyY + 38, MUTED);
+
+        List<KalanHudPanel> panels = selected.getHudPanels();
+        int rowY = bodyY + 54;
+        int rowH = 24;
+        int gap = 4;
+        for (int i = 0; i < panels.size(); i++) {
+            KalanHudPanel panel = panels.get(i);
+            KalanHudElement element = KalanHudRegistry.find(panel);
+            boolean enabled = element != null && element.isVisible();
+            int ry = rowY + i * (rowH + gap);
+            box(c, x + 8, ry, cw - 16, rowH, 7, enabled ? TAB_ACTIVE : CARD_BG,
+                    enabled ? CARD_BORDER_ACTIVE : CARD_BORDER);
+            txt(c, panel.getTitle(), x + 18, ry + 8, WHITE);
+            String state = enabled ? "ON" : "OFF";
+            int stateW = textW(state);
+            txt(c, state, x + cw - 18 - stateW, ry + 8, enabled ? ACCENT_LIGHT : MUTED);
+        }
+        txt(c, "ЛКМ по строке — переключить компонент", x + 8, bodyY + bodyH - 34, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -557,6 +586,30 @@ public final class KalanClickGuiScreen extends Screen {
 
         int bodyY = y + headerH;
         if (selected != null) {
+            if (selected.isHudGroup()) {
+                if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30)) {
+                    selected = null;
+                    return true;
+                }
+                if (button == 0) {
+                    List<KalanHudPanel> panels = selected.getHudPanels();
+                    int rowY = bodyY + 54;
+                    int rowH = 24;
+                    int gap = 4;
+                    for (int i = 0; i < panels.size(); i++) {
+                        int ry = rowY + i * (rowH + gap);
+                        if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 8, ry, cw - 16, rowH)) {
+                            KalanHudElement element = KalanHudRegistry.find(panels.get(i));
+                            if (element != null) {
+                                element.setVisible(!element.isVisible());
+                                KalanHudLayoutStore.save();
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return true;
+            }
             if (selected.getVisualFeature() != null) {
                 if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30)) {
                     selected = null;
