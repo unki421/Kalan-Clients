@@ -261,8 +261,12 @@ public final class KalanClickGuiScreen extends Screen {
                 renderCustomSkySettings(c, x, bodyY, cw, bodyH);
             } else if (selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
                 renderChinaHatSettings(c, x, bodyY, cw, bodyH);
-            } else {
+            } else if (selected.getVisualFeature() == KalanVisualFeature.BLOCK_HIGHLIGHT) {
                 renderBlockHighlightSettings(c, x, bodyY, cw, bodyH);
+            } else if (selected.getVisualFeature() == KalanVisualFeature.PLAYER_TRAILS) {
+                renderPlayerTrailsSettings(c, x, bodyY, cw, bodyH);
+            } else {
+                renderJumpCircleSettings(c, x, bodyY, cw, bodyH);
             }
             return;
         }
@@ -342,6 +346,37 @@ public final class KalanClickGuiScreen extends Screen {
                 bodyY + 112, WHITE);
         txt(c, "Подсвечивает только выбранный блок", x + 10, bodyY + 158, MUTED);
         txt(c, "ЛКМ — сменить цвет", x + 10, bodyY + 180, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+
+    private void renderPlayerTrailsSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        int color = KalanConfig.get().getPlayerTrailsColor();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Player Trails", x + 24, bodyY + 14, WHITE);
+        txt(c, "СЛЕД ЗА ТВОИМ ПЕРСОНАЖЕМ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Цвет следа", x + 10, bodyY + 76, WHITE);
+        box(c, x + 10, bodyY + 100, cw - 20, 34, 8, color, CARD_BORDER_ACTIVE);
+        txt(c, "Сменить цвет", x + 10 + (cw - 20 - textW("Сменить цвет")) / 2,
+                bodyY + 112, WHITE);
+        txt(c, "След рисуется только за тобой", x + 10, bodyY + 158, MUTED);
+        txt(c, "ЛКМ — сменить цвет", x + 10, bodyY + 180, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderJumpCircleSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        KalanConfig config = KalanConfig.get();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Jump Circle", x + 24, bodyY + 14, WHITE);
+        txt(c, "КРУГ ПОД ТОБОЙ ПРИ ПРЫЖКЕ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Цвет круга", x + 10, bodyY + 76, WHITE);
+        box(c, x + 10, bodyY + 100, cw - 20, 34, 8, config.getJumpCircleColor(), CARD_BORDER_ACTIVE);
+        txt(c, "Сменить цвет", x + 10 + (cw - 20 - textW("Сменить цвет")) / 2,
+                bodyY + 112, WHITE);
+        txt(c, "Размер", x + 10, bodyY + 158, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 150,
+                String.format(Locale.ROOT, "%.1fx", config.getJumpCircleSize()));
+        txt(c, "Появляется только под твоими ногами", x + 10, bodyY + 204, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -466,6 +501,21 @@ public final class KalanClickGuiScreen extends Screen {
                     int colorY = bodyY + 100;
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, colorX, colorY, cw - 20, 34)) {
                         KalanBlockHighlight.cycleColor();
+                        return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.PLAYER_TRAILS) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 10, bodyY + 100, cw - 20, 34)) {
+                        KalanPlayerTrails.cycleColor();
+                        return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.JUMP_CIRCLE) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 10, bodyY + 100, cw - 20, 34)) {
+                        KalanJumpCircle.cycleColor();
+                        return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 150, 102, 28)) {
+                        if (mx < cx + cw - 62) KalanJumpCircle.adjustSize(-0.1f);
+                        else KalanJumpCircle.adjustSize(0.1f);
                         return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
