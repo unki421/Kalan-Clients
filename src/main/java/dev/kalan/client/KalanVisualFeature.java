@@ -2,7 +2,8 @@ package dev.kalan.client;
 
 public enum KalanVisualFeature {
     CUSTOM_SKY("Custom Sky", "Локальная смена времени суток"),
-    CHINA_HAT("China Hat", "Косметическая 3D-шляпа над игроками");
+    CHINA_HAT("China Hat", "Косметическая 3D-шляпа над игроками"),
+    BLOCK_HIGHLIGHT("Block Highlight", "Подсветка блока под прицелом");
 
     private final String title;
     private final String description;
@@ -16,11 +17,18 @@ public enum KalanVisualFeature {
     public String getDescription() { return description; }
 
     public boolean isEnabled() {
-        return this == CUSTOM_SKY ? KalanCustomSky.isEnabled() : KalanChinaHat.isEnabled();
+        return switch (this) {
+            case CUSTOM_SKY -> KalanCustomSky.isEnabled();
+            case CHINA_HAT -> KalanChinaHat.isEnabled();
+            case BLOCK_HIGHLIGHT -> KalanBlockHighlight.isEnabled();
+        };
     }
 
     public void toggle() {
-        if (this == CUSTOM_SKY) KalanCustomSky.toggle();
-        else KalanChinaHat.toggle();
+        switch (this) {
+            case CUSTOM_SKY -> KalanCustomSky.toggle();
+            case CHINA_HAT -> KalanChinaHat.toggle();
+            case BLOCK_HIGHLIGHT -> KalanBlockHighlight.toggle();
+        }
     }
 }
