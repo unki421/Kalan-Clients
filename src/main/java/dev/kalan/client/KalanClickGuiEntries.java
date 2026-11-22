@@ -8,6 +8,7 @@ public final class KalanClickGuiEntries {
 
     private static final List<KalanClickGuiEntry> HUD_ENTRIES = new ArrayList<>();
     private static final List<KalanClickGuiEntry> COMBAT_ENTRIES = new ArrayList<>();
+    private static final List<KalanClickGuiEntry> VISUAL_ENTRIES = new ArrayList<>();
 
     static {
         register(HUD_ENTRIES, KalanHudPanel.WATERMARK);
@@ -17,6 +18,7 @@ public final class KalanClickGuiEntries {
         register(HUD_ENTRIES, KalanHudPanel.ARMOR);
         register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
 
+        VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_SKY));
     }
 
     private KalanClickGuiEntries() {
@@ -42,6 +44,10 @@ public final class KalanClickGuiEntries {
 
     public static List<KalanClickGuiEntry> getCombatEntries() {
         return Collections.unmodifiableList(COMBAT_ENTRIES);
+    }
+
+    public static List<KalanClickGuiEntry> getVisualEntries() {
+        return Collections.unmodifiableList(VISUAL_ENTRIES);
     }
 
     public static KalanClickGuiEntry find(String title) {
