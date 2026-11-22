@@ -5,7 +5,8 @@ public enum KalanVisualFeature {
     CHINA_HAT("China Hat", "Косметическая 3D-шляпа над игроками"),
     BLOCK_HIGHLIGHT("Block Highlight", "Подсветка блока под прицелом"),
     PLAYER_TRAILS("Player Trails", "След из частиц только за тобой"),
-    JUMP_CIRCLE("Jump Circle", "Круг появляется под тобой при прыжке");
+    JUMP_CIRCLE("Jump Circle", "Круг появляется под тобой при прыжке"),
+    SNOW("Snow", "Снегопад и снежный покров на блоках");
 
     private final String title;
     private final String description;
@@ -25,6 +26,7 @@ public enum KalanVisualFeature {
             case BLOCK_HIGHLIGHT -> KalanBlockHighlight.isEnabled();
             case PLAYER_TRAILS -> KalanPlayerTrails.isEnabled();
             case JUMP_CIRCLE -> KalanJumpCircle.isEnabled();
+            case SNOW -> KalanSnow.isEnabled();
         };
     }
 
@@ -35,6 +37,7 @@ public enum KalanVisualFeature {
             case BLOCK_HIGHLIGHT -> KalanBlockHighlight.toggle();
             case PLAYER_TRAILS -> KalanPlayerTrails.toggle();
             case JUMP_CIRCLE -> KalanJumpCircle.toggle();
+            case SNOW -> KalanSnow.toggle();
         }
     }
 }
