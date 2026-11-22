@@ -46,10 +46,10 @@ public final class KalanCustomCrosshair {
         int thickness = config.getCustomCrosshairThickness();
         int color = config.getCustomCrosshairColor();
 
-        drawBar(context, cx - gap - size, cy, size, thickness, color);
-        drawBar(context, cx + gap + 1, cy, size, thickness, color);
-        drawBar(context, cx, cy - gap - size, thickness, size, color);
-        drawBar(context, cx, cy + gap + 1, thickness, size, color);
+        drawBar(context, cx - gap - size / 2, cy, size, thickness, color);
+        drawBar(context, cx + gap + size / 2, cy, size, thickness, color);
+        drawBar(context, cx, cy - gap - size / 2, thickness, size, color);
+        drawBar(context, cx, cy + gap + size / 2, thickness, size, color);
     }
 
     private static void drawBar(DrawContext context, int cx, int cy, int width, int height, int color) {
