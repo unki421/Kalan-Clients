@@ -42,6 +42,11 @@ public final class KalanConfig {
     private float jumpCircleSize = 1.0f;
     private boolean snowEnabled = false;
     private int snowIntensity = 3;
+    private boolean customCrosshairEnabled = false;
+    private int customCrosshairColor = 0xFFB56BFF;
+    private int customCrosshairSize = 6;
+    private int customCrosshairGap = 3;
+    private int customCrosshairThickness = 2;
 
     private KalanConfig() {
     }
@@ -80,6 +85,10 @@ public final class KalanConfig {
         jumpCircleSize = clamp(jumpCircleSize, 0.5f, 2.0f);
         if (snowIntensity <= 0) snowIntensity = 3;
         snowIntensity = Math.max(1, Math.min(5, snowIntensity));
+        if (customCrosshairColor == 0) customCrosshairColor = 0xFFB56BFF;
+        customCrosshairSize = Math.max(2, Math.min(14, customCrosshairSize));
+        customCrosshairGap = Math.max(0, Math.min(12, customCrosshairGap));
+        customCrosshairThickness = Math.max(1, Math.min(5, customCrosshairThickness));
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -203,6 +212,17 @@ public final class KalanConfig {
     public void setSnowEnabled(boolean value) { snowEnabled = value; save(); }
     public int getSnowIntensity() { return snowIntensity; }
     public void setSnowIntensity(int value) { snowIntensity = Math.max(1, Math.min(5, value)); save(); }
+
+    public boolean isCustomCrosshairEnabled() { return customCrosshairEnabled; }
+    public void setCustomCrosshairEnabled(boolean value) { customCrosshairEnabled = value; save(); }
+    public int getCustomCrosshairColor() { return customCrosshairColor; }
+    public void setCustomCrosshairColor(int value) { customCrosshairColor = value; save(); }
+    public int getCustomCrosshairSize() { return customCrosshairSize; }
+    public void setCustomCrosshairSize(int value) { customCrosshairSize = Math.max(2, Math.min(14, value)); save(); }
+    public int getCustomCrosshairGap() { return customCrosshairGap; }
+    public void setCustomCrosshairGap(int value) { customCrosshairGap = Math.max(0, Math.min(12, value)); save(); }
+    public int getCustomCrosshairThickness() { return customCrosshairThickness; }
+    public void setCustomCrosshairThickness(int value) { customCrosshairThickness = Math.max(1, Math.min(5, value)); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
