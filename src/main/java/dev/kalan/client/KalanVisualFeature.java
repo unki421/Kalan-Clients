@@ -3,7 +3,9 @@ package dev.kalan.client;
 public enum KalanVisualFeature {
     CUSTOM_SKY("Custom Sky", "Локальная смена времени суток"),
     CHINA_HAT("China Hat", "Косметическая 3D-шляпа над игроками"),
-    BLOCK_HIGHLIGHT("Block Highlight", "Подсветка блока под прицелом");
+    BLOCK_HIGHLIGHT("Block Highlight", "Подсветка блока под прицелом"),
+    PLAYER_TRAILS("Player Trails", "След из частиц только за тобой"),
+    JUMP_CIRCLE("Jump Circle", "Круг появляется под тобой при прыжке");
 
     private final String title;
     private final String description;
@@ -21,6 +23,8 @@ public enum KalanVisualFeature {
             case CUSTOM_SKY -> KalanCustomSky.isEnabled();
             case CHINA_HAT -> KalanChinaHat.isEnabled();
             case BLOCK_HIGHLIGHT -> KalanBlockHighlight.isEnabled();
+            case PLAYER_TRAILS -> KalanPlayerTrails.isEnabled();
+            case JUMP_CIRCLE -> KalanJumpCircle.isEnabled();
         };
     }
 
@@ -29,6 +33,8 @@ public enum KalanVisualFeature {
             case CUSTOM_SKY -> KalanCustomSky.toggle();
             case CHINA_HAT -> KalanChinaHat.toggle();
             case BLOCK_HIGHLIGHT -> KalanBlockHighlight.toggle();
+            case PLAYER_TRAILS -> KalanPlayerTrails.toggle();
+            case JUMP_CIRCLE -> KalanJumpCircle.toggle();
         }
     }
 }
