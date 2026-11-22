@@ -40,9 +40,9 @@ public final class KalanTargetEsp {
         Vec3d camera = context.camera().getPos();
         Vec3d pos = target.getLerpedPos(tickDelta).subtract(camera);
         Box bounds = target.getBoundingBox();
-        float radius = (float) Math.max(0.42, Math.max(bounds.getXLength(), bounds.getZLength()) * 0.72)
+        float radius = (float) Math.max(0.42, Math.max((bounds.maxX - bounds.minX), (bounds.maxZ - bounds.minZ)) * 0.72)
                 * KalanConfig.get().getTargetEspSize();
-        float height = (float) bounds.getYLength();
+        float height = (float) (bounds.maxY - bounds.minY);
         float phase = (System.nanoTime() / 1_000_000_000.0f)
                 * KalanConfig.get().getTargetEspSpeed() * 1.7f;
         int color = KalanConfig.get().getTargetEspColor();
