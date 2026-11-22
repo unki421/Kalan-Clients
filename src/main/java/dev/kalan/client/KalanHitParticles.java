@@ -29,12 +29,12 @@ public final class KalanHitParticles {
         int amount = config.getHitParticlesAmount();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < amount; i++) {
-            double x = box.minX + RANDOM.nextDouble() * (box.maxX - box.minX);
-            double y = box.minY + RANDOM.nextDouble() * (box.maxY - box.minY);
-            double z = box.minZ + RANDOM.nextDouble() * (box.maxZ - box.minZ);
-            double vx = (RANDOM.nextDouble() - 0.5) * 0.12;
-            double vy = RANDOM.nextDouble() * 0.12;
-            double vz = (RANDOM.nextDouble() - 0.5) * 0.12;
+            double x = box.minX + random.nextDouble() * (box.maxX - box.minX);
+            double y = box.minY + 0.12 + random.nextDouble() * Math.max(0.1, box.maxY - box.minY - 0.12);
+            double z = box.minZ + random.nextDouble() * (box.maxZ - box.minZ);
+            double vx = (random.nextDouble() - 0.5) * 0.22;
+            double vy = random.nextDouble() * 0.22;
+            double vz = (random.nextDouble() - 0.5) * 0.12;
             switch (config.getHitParticlesStyle()) {
                 case 1 -> world.addParticle(ParticleTypes.ENCHANT, x, y, z, vx * 0.7, vy + 0.04, vz * 0.7);
                 case 2 -> world.addParticle(ParticleTypes.END_ROD, x, y, z, vx * 0.6, vy + 0.03, vz * 0.6);
