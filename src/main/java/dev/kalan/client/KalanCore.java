@@ -26,6 +26,7 @@ public final class KalanCore {
         KalanBlockHighlight.initialize();
         KalanPlayerTrails.initialize();
         KalanJumpCircle.initialize();
+        KalanSnow.initialize();
         KalanHudLayoutStore.load();
         KalanHudRenderer.initialize();
         KalanHudDragHandler.initialize();
