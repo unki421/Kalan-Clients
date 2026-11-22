@@ -35,6 +35,52 @@ public final class KalanProfileManager {
         initialized = true;
     }
 
+
+    public static String[] getSuggestions(String input) {
+        String value = input == null ? "" : input.toLowerCase(Locale.ROOT);
+        if (".".equals(value)) {
+            return new String[]{
+                    ".cfg — управление конфигами",
+                    ".cfg save <название> — сохранить конфиг",
+                    ".cfg load <название> — загрузить конфиг",
+                    ".cfg list — показать список конфигов",
+                    ".cfg delete <название> — удалить конфиг"
+            };
+        }
+        if (".c".equals(value) || ".cf".equals(value) || ".cfg".equals(value)) {
+            return new String[]{
+                    ".cfg save <название>",
+                    ".cfg load <название>",
+                    ".cfg list",
+                    ".cfg delete <название>"
+            };
+        }
+        if (value.startsWith(".cfg ")) {
+            String rest = value.substring(5).trim();
+            if (rest.isEmpty()) {
+                return new String[]{
+                        "save <название> — сохранить",
+                        "load <название> — загрузить",
+                        "list — список конфигов",
+                        "delete <название> — удалить"
+                };
+            }
+            if ("save".startsWith(rest) || rest.startsWith("save ")) {
+                return new String[]{"Использование: .cfg save <название>"};
+            }
+            if ("load".startsWith(rest) || rest.startsWith("load ")) {
+                return new String[]{"Использование: .cfg load <название>"};
+            }
+            if ("list".startsWith(rest)) {
+                return new String[]{"Использование: .cfg list"};
+            }
+            if ("delete".startsWith(rest) || rest.startsWith("delete ")) {
+                return new String[]{"Использование: .cfg delete <название>"};
+            }
+        }
+        return new String[0];
+    }
+
     private static boolean onChatMessage(String message) {
         if (message == null) return true;
         String trimmed = message.trim();
