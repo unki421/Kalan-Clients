@@ -74,8 +74,19 @@ public final class KalanClickGuiScreen extends Screen {
         return cw >= 210 ? 2 : 1;
     }
 
+    private boolean isSliderDragging() {
+        return draggingScale || draggingOpacity;
+    }
+
+    private int fadeColor(int color) {
+        if (!isSliderDragging()) return color;
+        int alpha = (color >>> 24) & 255;
+        int fadedAlpha = Math.round(alpha * 0.28f);
+        return (color & 0x00FFFFFF) | (fadedAlpha << 24);
+    }
+
     private void txt(DrawContext c, String s, int x, int y, int color) {
-        c.drawTextWithShadow(mc.textRenderer, s, x, y, color);
+        c.drawTextWithShadow(mc.textRenderer, s, x, y, fadeColor(color));
     }
 
     private int textW(String s) {
@@ -84,7 +95,7 @@ public final class KalanClickGuiScreen extends Screen {
 
     @Override
     public void renderBackground(DrawContext c, int mx, int my, float delta) {
-        c.fill(0, 0, width, height, OVERLAY);
+        c.fill(0, 0, width, height, fadeColor(OVERLAY));
     }
 
     @Override
@@ -104,11 +115,11 @@ public final class KalanClickGuiScreen extends Screen {
         box(c, x, y, w, h, 12, WINDOW_BG, WINDOW_BORDER);
 
         // Шапка и левый сайдбар внутри окна
-        c.fill(x + 2, y + 2, x + w - 2, y + headerH, HEADER_BG);
-        c.fill(x + 2, y + headerH, x + w - 2, y + headerH + 1, LINE);
+        c.fill(x + 2, y + 2, x + w - 2, y + headerH, fadeColor(HEADER_BG));
+        c.fill(x + 2, y + headerH, x + w - 2, y + headerH + 1, fadeColor(LINE));
 
-        c.fill(x + 2, y + headerH + 1, x + sw, y + h - 2, SIDEBAR_BG);
-        c.fill(x + sw, y + headerH + 1, x + sw + 1, y + h - 2, LINE);
+        c.fill(x + 2, y + headerH + 1, x + sw, y + h - 2, fadeColor(SIDEBAR_BG));
+        c.fill(x + sw, y + headerH + 1, x + sw + 1, y + h - 2, fadeColor(LINE));
 
         // Логотип Kalan Client
         drawClientMark(c, x + 11, y + 12);
@@ -602,8 +613,8 @@ public final class KalanClickGuiScreen extends Screen {
         return false;
     }
 
-    private static void box(DrawContext c, int x, int y, int w, int h, int r,
-                            int fillColor, int borderColor) {
+    private void box(DrawContext c, int x, int y, int w, int h, int r,
+                     int fillColor, int borderColor) {
         if (w <= 0 || h <= 0) {
             return;
         }
@@ -613,10 +624,11 @@ public final class KalanClickGuiScreen extends Screen {
         }
     }
 
-    private static void rounded(DrawContext c, int x, int y, int w, int h, int r, int color) {
+    private void rounded(DrawContext c, int x, int y, int w, int h, int r, int color) {
         if (w <= 0 || h <= 0) {
             return;
         }
+        color = fadeColor(color);
         int radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
         if (radius == 0) {
             c.fill(x, y, x + w, y + h, color);
