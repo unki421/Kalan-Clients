@@ -246,7 +246,11 @@ public final class KalanClickGuiScreen extends Screen {
 
     private void renderSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
         if (selected.getVisualFeature() != null) {
-            renderCustomSkySettings(c, x, bodyY, cw, bodyH);
+            if (selected.getVisualFeature() == KalanVisualFeature.CUSTOM_SKY) {
+                renderCustomSkySettings(c, x, bodyY, cw, bodyH);
+            } else {
+                renderChinaHatSettings(c, x, bodyY, cw, bodyH);
+            }
             return;
         }
         KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
@@ -289,6 +293,37 @@ public final class KalanClickGuiScreen extends Screen {
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
+
+    private void renderChinaHatSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        KalanConfig config = KalanConfig.get();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "China Hat", x + 24, bodyY + 14, WHITE);
+        txt(c, "НАСТРОЙКА ШЛЯПЫ", x + 8, bodyY + 38, MUTED);
+
+        int rowY = bodyY + 62;
+        txt(c, "Цвет", x + 10, rowY + 8, WHITE);
+        box(c, x + cw - 86, rowY, 76, 28, 7, config.getChinaHatColor(), CARD_BORDER_ACTIVE);
+        txt(c, "Сменить", x + cw - 80, rowY + 9, WHITE);
+
+        rowY += 44;
+        txt(c, "Размер", x + 10, rowY + 8, WHITE);
+        drawValueControl(c, x + cw - 112, rowY, String.format(Locale.ROOT, "%.1fx", config.getChinaHatSize()));
+
+        rowY += 44;
+        txt(c, "Высота", x + 10, rowY + 8, WHITE);
+        drawValueControl(c, x + cw - 112, rowY, String.format(Locale.ROOT, "%.1f", config.getChinaHatHeight()));
+
+        txt(c, "Шляпа отображается над игроками", x + 8, bodyY + 204, MUTED);
+        txt(c, "ЛКМ по настройке — изменить значение", x + 8, bodyY + 222, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void drawValueControl(DrawContext c, int x, int y, String value) {
+        box(c, x, y, 102, 28, 7, CARD_BG, CARD_BORDER);
+        txt(c, "−", x + 9, y + 9, ACCENT_LIGHT);
+        txt(c, value, x + 33, y + 9, WHITE);
+        txt(c, "+", x + 84, y + 9, ACCENT_LIGHT);
+    }
 
     private void drawSlider(DrawContext c, int x, int y, int cw, String label,
                             float value, float min, float max, String valueText) {
@@ -388,7 +423,7 @@ public final class KalanClickGuiScreen extends Screen {
                     selected = null;
                     return true;
                 }
-                if (button == 0) {
+                if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CUSTOM_SKY) {
                     KalanSkyPreset[] presets = KalanSkyPreset.values();
                     for (int i = 0; i < presets.length; i++) {
                         int presetX = cx + 8 + (i % 2) * ((cw - 18) / 2);
@@ -398,6 +433,25 @@ public final class KalanClickGuiScreen extends Screen {
                             KalanCustomSky.setPreset(presets[i]);
                             return true;
                         }
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
+                    KalanConfig config = KalanConfig.get();
+                    int rowY = bodyY + 62;
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 86, rowY, 76, 28)) {
+                        KalanChinaHat.cycleColor();
+                        return true;
+                    }
+                    rowY += 44;
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, rowY, 102, 28)) {
+                        if (mx < cx + cw - 62) KalanChinaHat.adjustSize(-0.1f);
+                        else KalanChinaHat.adjustSize(0.1f);
+                        return true;
+                    }
+                    rowY += 44;
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, rowY, 102, 28)) {
+                        if (mx < cx + cw - 62) KalanChinaHat.adjustHeight(-0.1f);
+                        else KalanChinaHat.adjustHeight(0.1f);
+                        return true;
                     }
                 }
                 return true;
