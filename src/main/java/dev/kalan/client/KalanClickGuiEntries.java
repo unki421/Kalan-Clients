@@ -19,6 +19,7 @@ public final class KalanClickGuiEntries {
         register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
 
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_SKY));
+        VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CHINA_HAT));
     }
 
     private KalanClickGuiEntries() {
