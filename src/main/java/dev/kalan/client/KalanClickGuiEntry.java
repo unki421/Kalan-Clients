@@ -6,6 +6,7 @@ public final class KalanClickGuiEntry {
     private final String title;
     private final String description;
     private final KalanHudPanel panel;
+    private final KalanVisualFeature visualFeature;
 
     public KalanClickGuiEntry(
             String title,
@@ -15,6 +16,14 @@ public final class KalanClickGuiEntry {
         this.title = title;
         this.description = description;
         this.panel = panel;
+        this.visualFeature = null;
+    }
+
+    public KalanClickGuiEntry(KalanVisualFeature feature) {
+        this.title = feature.getTitle();
+        this.description = feature.getDescription();
+        this.panel = null;
+        this.visualFeature = feature;
     }
 
     public String getTitle() {
@@ -29,7 +38,12 @@ public final class KalanClickGuiEntry {
         return panel;
     }
 
+    public KalanVisualFeature getVisualFeature() {
+        return visualFeature;
+    }
+
     public boolean isEnabled() {
+        if (visualFeature != null) return visualFeature.isEnabled();
         if (panel == null) {
             return false;
         }
@@ -39,6 +53,7 @@ public final class KalanClickGuiEntry {
     }
 
     public void toggle() {
+        if (visualFeature != null) { visualFeature.toggle(); return; }
         if (panel == null) {
             return;
         }
