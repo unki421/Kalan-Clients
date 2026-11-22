@@ -29,6 +29,10 @@ public final class KalanConfig {
     private float guiScale = 1.0f;
     private boolean customSkyEnabled = false;
     private String customSkyPreset = "DAY";
+    private boolean chinaHatEnabled = false;
+    private int chinaHatColor = 0xFFFFAA00;
+    private float chinaHatSize = 1.0f;
+    private float chinaHatHeight = 0.0f;
 
     private KalanConfig() {
     }
@@ -58,6 +62,9 @@ public final class KalanConfig {
 
     private void validate() {
         guiScale = clamp(guiScale, 0.5f, 2.0f);
+        chinaHatSize = clamp(chinaHatSize, 0.5f, 2.0f);
+        chinaHatHeight = clamp(chinaHatHeight, -0.5f, 0.8f);
+        if (chinaHatColor == 0) chinaHatColor = 0xFFFFAA00;
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -132,6 +139,15 @@ public final class KalanConfig {
     public void setCustomSkyEnabled(boolean enabled) { customSkyEnabled = enabled; save(); }
     public String getCustomSkyPreset() { return customSkyPreset; }
     public void setCustomSkyPreset(String preset) { if (preset != null && KalanSkyPreset.isValid(preset)) { customSkyPreset = preset; save(); } }
+
+    public boolean isChinaHatEnabled() { return chinaHatEnabled; }
+    public void setChinaHatEnabled(boolean value) { chinaHatEnabled = value; save(); }
+    public int getChinaHatColor() { return chinaHatColor; }
+    public void setChinaHatColor(int value) { chinaHatColor = value; save(); }
+    public float getChinaHatSize() { return chinaHatSize; }
+    public void setChinaHatSize(float value) { chinaHatSize = clamp(value, 0.5f, 2.0f); save(); }
+    public float getChinaHatHeight() { return chinaHatHeight; }
+    public void setChinaHatHeight(float value) { chinaHatHeight = clamp(value, -0.5f, 0.8f); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
