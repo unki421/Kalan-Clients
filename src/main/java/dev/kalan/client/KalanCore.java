@@ -31,6 +31,7 @@ public final class KalanCore {
         KalanHudRenderer.initialize();
         KalanHudDragHandler.initialize();
         KalanClickGuiKeybind.initialize();
+        KalanProfileManager.initialize();
 
         initialized = true;
 
