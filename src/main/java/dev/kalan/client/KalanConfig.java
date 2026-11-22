@@ -35,6 +35,11 @@ public final class KalanConfig {
     private float chinaHatHeight = 0.0f;
     private boolean blockHighlightEnabled = false;
     private int blockHighlightColor = 0x8855AAFF;
+    private boolean playerTrailsEnabled = false;
+    private int playerTrailsColor = 0xFFB56BFF;
+    private boolean jumpCircleEnabled = false;
+    private int jumpCircleColor = 0xFFB56BFF;
+    private float jumpCircleSize = 1.0f;
 
     private KalanConfig() {
     }
@@ -68,6 +73,9 @@ public final class KalanConfig {
         chinaHatHeight = clamp(chinaHatHeight, -0.5f, 0.8f);
         if (chinaHatColor == 0) chinaHatColor = 0xFFFFAA00;
         if (blockHighlightColor == 0) blockHighlightColor = 0x8855AAFF;
+        if (playerTrailsColor == 0) playerTrailsColor = 0xFFB56BFF;
+        if (jumpCircleColor == 0) jumpCircleColor = 0xFFB56BFF;
+        jumpCircleSize = clamp(jumpCircleSize, 0.5f, 2.0f);
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -156,6 +164,18 @@ public final class KalanConfig {
     public void setBlockHighlightEnabled(boolean value) { blockHighlightEnabled = value; save(); }
     public int getBlockHighlightColor() { return blockHighlightColor; }
     public void setBlockHighlightColor(int value) { blockHighlightColor = value; save(); }
+
+    public boolean isPlayerTrailsEnabled() { return playerTrailsEnabled; }
+    public void setPlayerTrailsEnabled(boolean value) { playerTrailsEnabled = value; save(); }
+    public int getPlayerTrailsColor() { return playerTrailsColor; }
+    public void setPlayerTrailsColor(int value) { playerTrailsColor = value; save(); }
+
+    public boolean isJumpCircleEnabled() { return jumpCircleEnabled; }
+    public void setJumpCircleEnabled(boolean value) { jumpCircleEnabled = value; save(); }
+    public int getJumpCircleColor() { return jumpCircleColor; }
+    public void setJumpCircleColor(int value) { jumpCircleColor = value; save(); }
+    public float getJumpCircleSize() { return jumpCircleSize; }
+    public void setJumpCircleSize(float value) { jumpCircleSize = clamp(value, 0.5f, 2.0f); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
