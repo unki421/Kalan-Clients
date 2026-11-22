@@ -269,6 +269,8 @@ public final class KalanClickGuiScreen extends Screen {
                 renderJumpCircleSettings(c, x, bodyY, cw, bodyH);
             } else if (selected.getVisualFeature() == KalanVisualFeature.CUSTOM_CROSSHAIR) {
                 renderCustomCrosshairSettings(c, x, bodyY, cw, bodyH);
+            } else if (selected.getVisualFeature() == KalanVisualFeature.HIT_PARTICLES) {
+                renderHitParticlesSettings(c, x, bodyY, cw, bodyH);
             } else {
                 renderSnowSettings(c, x, bodyY, cw, bodyH);
             }
@@ -400,6 +402,22 @@ public final class KalanClickGuiScreen extends Screen {
         txt(c, "Толщина", x + 10, bodyY + 212, WHITE);
         drawValueControl(c, x + cw - 112, bodyY + 200, config.getCustomCrosshairThickness() + " px");
         txt(c, "Прицел отображается вместо стандартного", x + 10, bodyY + 242, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderHitParticlesSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        KalanConfig config = KalanConfig.get();
+        String[] styles = {"CRIT", "ENCHANT", "END ROD"};
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Hit Particles", x + 24, bodyY + 14, WHITE);
+        txt(c, "ЧАСТИЦЫ ПРИ АТАКЕ ЦЕЛИ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Тип эффекта", x + 10, bodyY + 76, WHITE);
+        box(c, x + 10, bodyY + 94, cw - 20, 30, 7, CARD_BG, CARD_BORDER_ACTIVE);
+        txt(c, styles[config.getHitParticlesStyle()] + "  ·  Сменить", x + 18, bodyY + 104, ACCENT_LIGHT);
+        txt(c, "Количество", x + 10, bodyY + 148, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 136, config.getHitParticlesAmount() + " шт.");
+        txt(c, "Эффект появляется возле атакованной цели", x + 10, bodyY + 190, MUTED);
+        txt(c, "Работает только визуально на клиенте", x + 10, bodyY + 208, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -567,6 +585,15 @@ public final class KalanClickGuiScreen extends Screen {
                     }
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 200, 102, 28)) {
                         KalanCustomCrosshair.adjustThickness(mx < cx + cw - 62 ? -1 : 1); return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.HIT_PARTICLES) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 10, bodyY + 94, cw - 20, 30)) {
+                        KalanHitParticles.cycleStyle();
+                        return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 136, 102, 28)) {
+                        KalanHitParticles.adjustAmount(mx < cx + cw - 62 ? -1 : 1);
+                        return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.SNOW) {
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 64, 102, 28)) {
