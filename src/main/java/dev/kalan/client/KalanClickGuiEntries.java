@@ -21,6 +21,8 @@ public final class KalanClickGuiEntries {
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_SKY));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CHINA_HAT));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.BLOCK_HIGHLIGHT));
+        VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.PLAYER_TRAILS));
+        VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.JUMP_CIRCLE));
     }
 
     private KalanClickGuiEntries() {
