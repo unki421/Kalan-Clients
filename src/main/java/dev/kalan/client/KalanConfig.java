@@ -47,6 +47,9 @@ public final class KalanConfig {
     private int customCrosshairSize = 6;
     private int customCrosshairGap = 3;
     private int customCrosshairThickness = 2;
+    private boolean hitParticlesEnabled = false;
+    private int hitParticlesStyle = 0;
+    private int hitParticlesAmount = 6;
 
     private KalanConfig() {
     }
@@ -89,6 +92,8 @@ public final class KalanConfig {
         customCrosshairSize = Math.max(2, Math.min(14, customCrosshairSize));
         customCrosshairGap = Math.max(0, Math.min(12, customCrosshairGap));
         customCrosshairThickness = Math.max(1, Math.min(5, customCrosshairThickness));
+        hitParticlesStyle = Math.max(0, Math.min(2, hitParticlesStyle));
+        hitParticlesAmount = Math.max(2, Math.min(12, hitParticlesAmount));
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -223,6 +228,13 @@ public final class KalanConfig {
     public void setCustomCrosshairGap(int value) { customCrosshairGap = Math.max(0, Math.min(12, value)); save(); }
     public int getCustomCrosshairThickness() { return customCrosshairThickness; }
     public void setCustomCrosshairThickness(int value) { customCrosshairThickness = Math.max(1, Math.min(5, value)); save(); }
+
+    public boolean isHitParticlesEnabled() { return hitParticlesEnabled; }
+    public void setHitParticlesEnabled(boolean value) { hitParticlesEnabled = value; save(); }
+    public int getHitParticlesStyle() { return hitParticlesStyle; }
+    public void setHitParticlesStyle(int value) { hitParticlesStyle = Math.max(0, Math.min(2, value)); save(); }
+    public int getHitParticlesAmount() { return hitParticlesAmount; }
+    public void setHitParticlesAmount(int value) { hitParticlesAmount = Math.max(2, Math.min(12, value)); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
