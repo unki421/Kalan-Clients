@@ -21,6 +21,7 @@ public final class KalanCore {
         LOGGER.info("Starting Kalan Client...");
 
         KalanConfig.load();
+        KalanCustomSky.initialize();
         KalanHudLayoutStore.load();
         KalanHudRenderer.initialize();
         KalanHudDragHandler.initialize();
