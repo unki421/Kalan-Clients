@@ -23,6 +23,7 @@ public final class KalanClickGuiEntries {
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.BLOCK_HIGHLIGHT));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.PLAYER_TRAILS));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.JUMP_CIRCLE));
+        VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.SNOW));
     }
 
     private KalanClickGuiEntries() {
