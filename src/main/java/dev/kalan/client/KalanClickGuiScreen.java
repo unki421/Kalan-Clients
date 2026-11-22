@@ -160,7 +160,7 @@ public final class KalanClickGuiScreen extends Screen {
             String symbol = switch (cat) {
                 case HUD -> "◇";
                 case COMBAT -> "⚒";
-                case SETTINGS -> "♟";
+                case VISUALS -> "✦";
             };
             int tw = textW(symbol);
             txt(c, symbol, bx + (btnSize - tw) / 2, by + 11,
@@ -245,6 +245,10 @@ public final class KalanClickGuiScreen extends Screen {
     }
 
     private void renderSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        if (selected.getVisualFeature() != null) {
+            renderCustomSkySettings(c, x, bodyY, cw, bodyH);
+            return;
+        }
         KalanHudElement element = KalanHudRegistry.find(selected.getPanel());
         if (element == null) {
             selected = null;
@@ -264,6 +268,28 @@ public final class KalanClickGuiScreen extends Screen {
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
+    private void renderCustomSkySettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Custom Sky", x + 24, bodyY + 14, WHITE);
+        txt(c, "ВЫБОР ВРЕМЕНИ СУТОК", x + 8, bodyY + 38, MUTED);
+        txt(c, "Только на твоём клиенте", x + 8, bodyY + 52, ACCENT_LIGHT);
+
+        KalanSkyPreset[] presets = KalanSkyPreset.values();
+        for (int i = 0; i < presets.length; i++) {
+            int bx = x + 8 + (i % 2) * ((cw - 18) / 2);
+            int by = bodyY + 66 + (i / 2) * 44;
+            int bw = (cw - 18) / 2;
+            boolean active = KalanCustomSky.getPreset() == presets[i];
+            box(c, bx, by, bw, 34, 7, active ? TAB_ACTIVE : CARD_BG,
+                    active ? CARD_BORDER_ACTIVE : CARD_BORDER);
+            String label = presets[i].getTitle();
+            txt(c, label, bx + (bw - textW(label)) / 2, by + 12, WHITE);
+        }
+        txt(c, "ЛКМ — выбрать время", x + 8, bodyY + 164, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+
     private void drawSlider(DrawContext c, int x, int y, int cw, String label,
                             float value, float min, float max, String valueText) {
         txt(c, label, x + 8, y, WHITE);
@@ -280,7 +306,7 @@ public final class KalanClickGuiScreen extends Screen {
         List<KalanClickGuiEntry> source = switch (category) {
             case HUD -> KalanClickGuiEntries.getHudEntries();
             case COMBAT -> KalanClickGuiEntries.getCombatEntries();
-            case SETTINGS -> List.of();
+            case VISUALS -> KalanClickGuiEntries.getVisualEntries();
         };
 
         if (search.isBlank()) {
@@ -357,7 +383,26 @@ public final class KalanClickGuiScreen extends Screen {
 
         int bodyY = y + headerH;
         if (selected != null) {
-            if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30)) {
+            if (selected.getVisualFeature() != null) {
+                if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30)) {
+                    selected = null;
+                    return true;
+                }
+                if (button == 0) {
+                    KalanSkyPreset[] presets = KalanSkyPreset.values();
+                    for (int i = 0; i < presets.length; i++) {
+                        int presetX = cx + 8 + (i % 2) * ((cw - 18) / 2);
+                        int presetY = bodyY + 66 + (i / 2) * 44;
+                        int presetW = (cw - 18) / 2;
+                        if (KalanClickGuiLayout.contains((int) mx, (int) my, presetX, presetY, presetW, 34)) {
+                            KalanCustomSky.setPreset(presets[i]);
+                            return true;
+                        }
+                    }
+                }
+                return true;
+            }
+            if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30))
                 selected = null;
                 return true;
             }
