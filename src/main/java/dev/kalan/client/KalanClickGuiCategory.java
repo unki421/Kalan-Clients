@@ -4,7 +4,7 @@ public enum KalanClickGuiCategory {
 
     HUD("HUD", "Информационный интерфейс"),
     COMBAT("Combat", "Боевые информационные элементы"),
-    SETTINGS("Settings", "Общие настройки");
+    VISUALS("Visuals", "Косметические визуальные эффекты");
 
     private final String title;
     private final String description;
