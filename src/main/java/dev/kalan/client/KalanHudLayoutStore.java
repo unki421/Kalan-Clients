@@ -43,6 +43,31 @@ public final class KalanHudLayoutStore {
         }
     }
 
+    public static String exportJson() {
+        List<KalanHudLayoutEntry> entries = new ArrayList<>();
+        for (KalanHudElement element : KalanHudRegistry.getAll()) {
+            entries.add(new KalanHudLayoutEntry(element));
+        }
+        return GSON.toJson(entries);
+    }
+
+    public static boolean importJson(String json) {
+        try {
+            List<KalanHudLayoutEntry> entries = GSON.fromJson(json, LIST_TYPE);
+            if (entries == null) return false;
+            for (KalanHudLayoutEntry entry : entries) {
+                if (entry == null || entry.id == null) continue;
+                KalanHudElement element = KalanHudRegistry.find(entry.id);
+                if (element != null) entry.applyTo(element);
+            }
+            save();
+            return true;
+        } catch (Exception e) {
+            KalanCore.LOGGER.error("Failed to import Kalan HUD layout", e);
+            return false;
+        }
+    }
+
     public static void load() {
         if (!Files.exists(FILE)) {
             return;
