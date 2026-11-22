@@ -18,6 +18,8 @@ public final class KalanClickGuiEntries {
         register(HUD_ENTRIES, KalanHudPanel.ARMOR);
         register(HUD_ENTRIES, KalanHudPanel.ARRAY_LIST);
 
+        COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_CROSSHAIR));
+
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_SKY));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CHINA_HAT));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.BLOCK_HIGHLIGHT));
