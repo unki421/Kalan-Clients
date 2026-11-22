@@ -87,6 +87,24 @@ public final class KalanConfig {
         }
     }
 
+    public static String exportProfileSettings() {
+        return GSON.toJson(INSTANCE);
+    }
+
+    public static boolean importProfileSettings(String json) {
+        try {
+            KalanConfig loaded = GSON.fromJson(json, KalanConfig.class);
+            if (loaded == null) return false;
+            loaded.validate();
+            INSTANCE = loaded;
+            save();
+            return true;
+        } catch (Exception e) {
+            KalanCore.LOGGER.error("Failed to import Kalan profile settings", e);
+            return false;
+        }
+    }
+
     public static void save() {
         try {
             Files.createDirectories(CONFIG_PATH.getParent());
