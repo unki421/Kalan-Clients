@@ -4,7 +4,8 @@
   "package": "dev.kalan.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "KalanChatSuggestionsMixin"
+    "KalanChatSuggestionsMixin",
+    "KalanCrosshairMixin"
   ],
   "injectors": {
     "defaultRequire": 1
