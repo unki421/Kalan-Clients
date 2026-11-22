@@ -307,9 +307,9 @@ public final class KalanClickGuiScreen extends Screen {
         txt(c, "УПРАВЛЕНИЕ КОМПОНЕНТАМИ HUD", x + 8, bodyY + 38, MUTED);
 
         List<KalanHudPanel> panels = selected.getHudPanels();
-        int rowY = bodyY + 58;
-        int rowH = 32;
-        int gap = 6;
+        int rowY = bodyY + 54;
+        int rowH = 24;
+        int gap = 4;
         for (int i = 0; i < panels.size(); i++) {
             KalanHudPanel panel = panels.get(i);
             KalanHudElement element = KalanHudRegistry.find(panel);
@@ -317,10 +317,10 @@ public final class KalanClickGuiScreen extends Screen {
             int ry = rowY + i * (rowH + gap);
             box(c, x + 8, ry, cw - 16, rowH, 7, enabled ? TAB_ACTIVE : CARD_BG,
                     enabled ? CARD_BORDER_ACTIVE : CARD_BORDER);
-            txt(c, panel.getTitle(), x + 18, ry + 11, WHITE);
+            txt(c, panel.getTitle(), x + 18, ry + 8, WHITE);
             String state = enabled ? "ON" : "OFF";
             int stateW = textW(state);
-            txt(c, state, x + cw - 18 - stateW, ry + 11, enabled ? ACCENT_LIGHT : MUTED);
+            txt(c, state, x + cw - 18 - stateW, ry + 8, enabled ? ACCENT_LIGHT : MUTED);
         }
         txt(c, "ЛКМ по строке — переключить компонент", x + 8, bodyY + bodyH - 34, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
@@ -593,9 +593,9 @@ public final class KalanClickGuiScreen extends Screen {
                 }
                 if (button == 0) {
                     List<KalanHudPanel> panels = selected.getHudPanels();
-                    int rowY = bodyY + 58;
-                    int rowH = 32;
-                    int gap = 6;
+                    int rowY = bodyY + 54;
+                    int rowH = 24;
+                    int gap = 4;
                     for (int i = 0; i < panels.size(); i++) {
                         int ry = rowY + i * (rowH + gap);
                         if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 8, ry, cw - 16, rowH)) {
