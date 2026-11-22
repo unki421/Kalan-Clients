@@ -170,7 +170,7 @@ public final class KalanClickGuiScreen extends Screen {
 
             String symbol = switch (cat) {
                 case HUD -> "◇";
-                case COMBAT -> "⚒";
+                case COMBAT -> "⚔";
                 case VISUALS -> "✦";
             };
             int tw = textW(symbol);
@@ -267,6 +267,8 @@ public final class KalanClickGuiScreen extends Screen {
                 renderPlayerTrailsSettings(c, x, bodyY, cw, bodyH);
             } else if (selected.getVisualFeature() == KalanVisualFeature.JUMP_CIRCLE) {
                 renderJumpCircleSettings(c, x, bodyY, cw, bodyH);
+            } else if (selected.getVisualFeature() == KalanVisualFeature.CUSTOM_CROSSHAIR) {
+                renderCustomCrosshairSettings(c, x, bodyY, cw, bodyH);
             } else {
                 renderSnowSettings(c, x, bodyY, cw, bodyH);
             }
@@ -379,6 +381,25 @@ public final class KalanClickGuiScreen extends Screen {
         drawValueControl(c, x + cw - 112, bodyY + 150,
                 String.format(Locale.ROOT, "%.1fx", config.getJumpCircleSize()));
         txt(c, "Появляется только под твоими ногами", x + 10, bodyY + 204, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+
+    private void renderCustomCrosshairSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        KalanConfig config = KalanConfig.get();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Custom Crosshair", x + 24, bodyY + 14, WHITE);
+        txt(c, "НАСТРОЙКА ПРИЦЕЛА", x + 8, bodyY + 38, MUTED);
+        txt(c, "Цвет", x + 10, bodyY + 70, WHITE);
+        box(c, x + 10, bodyY + 88, cw - 20, 28, 7, config.getCustomCrosshairColor(), CARD_BORDER_ACTIVE);
+        txt(c, "Сменить цвет", x + 10 + (cw - 20 - textW("Сменить цвет")) / 2, bodyY + 98, WHITE);
+        txt(c, "Размер", x + 10, bodyY + 136, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 124, config.getCustomCrosshairSize() + " px");
+        txt(c, "Расстояние", x + 10, bodyY + 174, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 162, config.getCustomCrosshairGap() + " px");
+        txt(c, "Толщина", x + 10, bodyY + 212, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 200, config.getCustomCrosshairThickness() + " px");
+        txt(c, "Прицел отображается вместо стандартного", x + 10, bodyY + 242, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -533,6 +554,19 @@ public final class KalanClickGuiScreen extends Screen {
                         if (mx < cx + cw - 62) KalanJumpCircle.adjustSize(-0.1f);
                         else KalanJumpCircle.adjustSize(0.1f);
                         return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CUSTOM_CROSSHAIR) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + 10, bodyY + 88, cw - 20, 28)) {
+                        KalanCustomCrosshair.cycleColor(); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 124, 102, 28)) {
+                        KalanCustomCrosshair.adjustSize(mx < cx + cw - 62 ? -1 : 1); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 162, 102, 28)) {
+                        KalanCustomCrosshair.adjustGap(mx < cx + cw - 62 ? -1 : 1); return true;
+                    }
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 200, 102, 28)) {
+                        KalanCustomCrosshair.adjustThickness(mx < cx + cw - 62 ? -1 : 1); return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.SNOW) {
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 64, 102, 28)) {
