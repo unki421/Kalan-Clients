@@ -78,6 +78,7 @@ public final class KalanConfig {
         if (playerTrailsColor == 0) playerTrailsColor = 0xFFB56BFF;
         if (jumpCircleColor == 0) jumpCircleColor = 0xFFB56BFF;
         jumpCircleSize = clamp(jumpCircleSize, 0.5f, 2.0f);
+        if (snowIntensity <= 0) snowIntensity = 3;
         snowIntensity = Math.max(1, Math.min(5, snowIntensity));
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
