@@ -265,8 +265,10 @@ public final class KalanClickGuiScreen extends Screen {
                 renderBlockHighlightSettings(c, x, bodyY, cw, bodyH);
             } else if (selected.getVisualFeature() == KalanVisualFeature.PLAYER_TRAILS) {
                 renderPlayerTrailsSettings(c, x, bodyY, cw, bodyH);
-            } else {
+            } else if (selected.getVisualFeature() == KalanVisualFeature.JUMP_CIRCLE) {
                 renderJumpCircleSettings(c, x, bodyY, cw, bodyH);
+            } else {
+                renderSnowSettings(c, x, bodyY, cw, bodyH);
             }
             return;
         }
@@ -377,6 +379,20 @@ public final class KalanClickGuiScreen extends Screen {
         drawValueControl(c, x + cw - 112, bodyY + 150,
                 String.format(Locale.ROOT, "%.1fx", config.getJumpCircleSize()));
         txt(c, "Появляется только под твоими ногами", x + 10, bodyY + 204, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderSnowSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        int intensity = KalanConfig.get().getSnowIntensity();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Snow", x + 24, bodyY + 14, WHITE);
+        txt(c, "СНЕГОПАД И СНЕЖНЫЙ ПОКРОВ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Интенсивность", x + 10, bodyY + 76, WHITE);
+        drawValueControl(c, x + cw - 112, bodyY + 64, intensity + " / 5");
+        txt(c, "1 — лёгкий снег", x + 10, bodyY + 116, MUTED);
+        txt(c, "5 — сильный снегопад", x + 10, bodyY + 134, MUTED);
+        txt(c, "Снег ложится на верх блоков", x + 10, bodyY + 174, ACCENT_LIGHT);
+        txt(c, "Только визуально, мир не меняется", x + 10, bodyY + 194, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -516,6 +532,12 @@ public final class KalanClickGuiScreen extends Screen {
                     if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 150, 102, 28)) {
                         if (mx < cx + cw - 62) KalanJumpCircle.adjustSize(-0.1f);
                         else KalanJumpCircle.adjustSize(0.1f);
+                        return true;
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.SNOW) {
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, cx + cw - 112, bodyY + 64, 102, 28)) {
+                        if (mx < cx + cw - 62) KalanSnow.adjustIntensity(-1);
+                        else KalanSnow.adjustIntensity(1);
                         return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
