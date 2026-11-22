@@ -20,6 +20,7 @@ public final class KalanClickGuiEntries {
 
         COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_CROSSHAIR));
         COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.HIT_PARTICLES));
+        COMBAT_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.TARGET_ESP));
 
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CUSTOM_SKY));
         VISUAL_ENTRIES.add(new KalanClickGuiEntry(KalanVisualFeature.CHINA_HAT));
