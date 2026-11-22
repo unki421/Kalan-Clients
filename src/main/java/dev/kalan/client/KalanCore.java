@@ -21,6 +21,7 @@ public final class KalanCore {
         LOGGER.info("Starting Kalan Client...");
 
         KalanConfig.load();
+        KalanCustomCrosshair.initialize();
         KalanCustomSky.initialize();
         KalanChinaHat.initialize();
         KalanBlockHighlight.initialize();
