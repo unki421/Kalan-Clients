@@ -7,10 +7,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class KalanHitParticles {
-    private static final Random RANDOM = new Random();
     private static boolean initialized;
 
     private KalanHitParticles() {}
@@ -18,7 +17,7 @@ public final class KalanHitParticles {
     public static void initialize() {
         if (initialized) return;
         AttackEntityCallback.EVENT.register((player, world, hand, target, hitResult) -> {
-            if (world.isClient && isEnabled()) spawn(world, target);
+            if (world.isClient && isEnabled() && !target.isRemoved() && target.isAlive()) spawn(world, target);
             return ActionResult.PASS;
         });
         initialized = true;
@@ -28,6 +27,7 @@ public final class KalanHitParticles {
         KalanConfig config = KalanConfig.get();
         Box box = target.getBoundingBox();
         int amount = config.getHitParticlesAmount();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < amount; i++) {
             double x = box.minX + RANDOM.nextDouble() * (box.maxX - box.minX);
             double y = box.minY + RANDOM.nextDouble() * (box.maxY - box.minY);
@@ -36,9 +36,9 @@ public final class KalanHitParticles {
             double vy = RANDOM.nextDouble() * 0.12;
             double vz = (RANDOM.nextDouble() - 0.5) * 0.12;
             switch (config.getHitParticlesStyle()) {
-                case 1 -> world.addParticle(ParticleTypes.ENCHANT, x, y, z, vx, vy, vz);
-                case 2 -> world.addParticle(ParticleTypes.END_ROD, x, y, z, vx, vy, vz);
-                default -> world.addParticle(ParticleTypes.CRIT, x, y, z, vx, vy, vz);
+                case 1 -> world.addParticle(ParticleTypes.ENCHANT, x, y, z, vx * 0.7, vy + 0.04, vz * 0.7);
+                case 2 -> world.addParticle(ParticleTypes.END_ROD, x, y, z, vx * 0.6, vy + 0.03, vz * 0.6);
+                default -> world.addParticle(ParticleTypes.CRIT, x, y, z, vx, vy + 0.03, vz);
             }
         }
     }
