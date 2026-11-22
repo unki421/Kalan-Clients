@@ -27,6 +27,8 @@ public final class KalanConfig {
 
     private int accentColor = KalanTheme.ACCENT_DEFAULT;
     private float guiScale = 1.0f;
+    private boolean customSkyEnabled = false;
+    private String customSkyPreset = "DAY";
 
     private KalanConfig() {
     }
@@ -56,6 +58,7 @@ public final class KalanConfig {
 
     private void validate() {
         guiScale = clamp(guiScale, 0.5f, 2.0f);
+        if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
             accentColor = KalanTheme.ACCENT_DEFAULT;
@@ -124,6 +127,11 @@ public final class KalanConfig {
         this.guiScale = clamp(guiScale, 0.5f, 2.0f);
         save();
     }
+
+    public boolean isCustomSkyEnabled() { return customSkyEnabled; }
+    public void setCustomSkyEnabled(boolean enabled) { customSkyEnabled = enabled; save(); }
+    public String getCustomSkyPreset() { return customSkyPreset; }
+    public void setCustomSkyPreset(String preset) { if (preset != null && KalanSkyPreset.isValid(preset)) { customSkyPreset = preset; save(); } }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
