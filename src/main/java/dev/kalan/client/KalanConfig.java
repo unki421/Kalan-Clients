@@ -49,7 +49,12 @@ public final class KalanConfig {
     private int customCrosshairThickness = 2;
     private boolean hitParticlesEnabled = false;
     private int hitParticlesStyle = 0;
-    private int hitParticlesAmount = 6;
+    private int hitParticlesAmount = 8;
+    private boolean targetEspEnabled = false;
+    private int targetEspStyle = 0;
+    private int targetEspColor = 0xFFB56BFF;
+    private float targetEspSize = 1.0f;
+    private float targetEspSpeed = 1.0f;
 
     private KalanConfig() {
     }
@@ -93,7 +98,11 @@ public final class KalanConfig {
         customCrosshairGap = Math.max(0, Math.min(12, customCrosshairGap));
         customCrosshairThickness = Math.max(1, Math.min(5, customCrosshairThickness));
         hitParticlesStyle = Math.max(0, Math.min(2, hitParticlesStyle));
-        hitParticlesAmount = Math.max(2, Math.min(12, hitParticlesAmount));
+        hitParticlesAmount = Math.max(2, Math.min(20, hitParticlesAmount));
+        targetEspStyle = Math.max(0, Math.min(2, targetEspStyle));
+        if (targetEspColor == 0) targetEspColor = 0xFFB56BFF;
+        targetEspSize = clamp(targetEspSize, 0.5f, 2.0f);
+        targetEspSpeed = clamp(targetEspSpeed, 0.25f, 2.5f);
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -235,6 +244,17 @@ public final class KalanConfig {
     public void setHitParticlesStyle(int value) { hitParticlesStyle = Math.max(0, Math.min(2, value)); save(); }
     public int getHitParticlesAmount() { return hitParticlesAmount; }
     public void setHitParticlesAmount(int value) { hitParticlesAmount = Math.max(2, Math.min(12, value)); save(); }
+
+    public boolean isTargetEspEnabled() { return targetEspEnabled; }
+    public void setTargetEspEnabled(boolean value) { targetEspEnabled = value; save(); }
+    public int getTargetEspStyle() { return targetEspStyle; }
+    public void setTargetEspStyle(int value) { targetEspStyle = Math.max(0, Math.min(2, value)); save(); }
+    public int getTargetEspColor() { return targetEspColor; }
+    public void setTargetEspColor(int value) { targetEspColor = value; save(); }
+    public float getTargetEspSize() { return targetEspSize; }
+    public void setTargetEspSize(float value) { targetEspSize = clamp(value, 0.5f, 2.0f); save(); }
+    public float getTargetEspSpeed() { return targetEspSpeed; }
+    public void setTargetEspSpeed(float value) { targetEspSpeed = clamp(value, 0.25f, 2.5f); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
