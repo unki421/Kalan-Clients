@@ -39,7 +39,18 @@ public final class KalanCustomSky {
 
     public static void reloadFromConfig() {
         KalanConfig config = KalanConfig.get();
-        enabled = config.isCustomSkyEnabled();
+        boolean wasEnabled = enabled;
+        boolean shouldEnable = config.isCustomSkyEnabled();
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        if (wasEnabled && !shouldEnable && trackedWorld != null && client.world == trackedWorld) {
+            trackedWorld.setTime(trackedWorld.getTime(), originalTimeOfDay, true);
+        } else if (!wasEnabled && shouldEnable && client.world != null) {
+            trackedWorld = client.world;
+            originalTimeOfDay = trackedWorld.getTimeOfDay();
+        }
+
+        enabled = shouldEnable;
         try {
             preset = KalanSkyPreset.valueOf(config.getCustomSkyPreset());
         } catch (IllegalArgumentException ignored) {
