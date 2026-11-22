@@ -40,6 +40,8 @@ public final class KalanConfig {
     private boolean jumpCircleEnabled = false;
     private int jumpCircleColor = 0xFFB56BFF;
     private float jumpCircleSize = 1.0f;
+    private boolean snowEnabled = false;
+    private int snowIntensity = 3;
 
     private KalanConfig() {
     }
@@ -76,6 +78,7 @@ public final class KalanConfig {
         if (playerTrailsColor == 0) playerTrailsColor = 0xFFB56BFF;
         if (jumpCircleColor == 0) jumpCircleColor = 0xFFB56BFF;
         jumpCircleSize = clamp(jumpCircleSize, 0.5f, 2.0f);
+        snowIntensity = Math.max(1, Math.min(5, snowIntensity));
         if (customSkyPreset == null || !KalanSkyPreset.isValid(customSkyPreset)) customSkyPreset = KalanSkyPreset.DAY.name();
 
         if (accentColor == 0) {
@@ -176,6 +179,11 @@ public final class KalanConfig {
     public void setJumpCircleColor(int value) { jumpCircleColor = value; save(); }
     public float getJumpCircleSize() { return jumpCircleSize; }
     public void setJumpCircleSize(float value) { jumpCircleSize = clamp(value, 0.5f, 2.0f); save(); }
+
+    public boolean isSnowEnabled() { return snowEnabled; }
+    public void setSnowEnabled(boolean value) { snowEnabled = value; save(); }
+    public int getSnowIntensity() { return snowIntensity; }
+    public void setSnowIntensity(int value) { snowIntensity = Math.max(1, Math.min(5, value)); save(); }
 
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
