@@ -23,6 +23,7 @@ public final class KalanCore {
         KalanConfig.load();
         KalanCustomCrosshair.initialize();
         KalanHitParticles.initialize();
+        KalanTargetEsp.initialize();
         KalanCustomSky.initialize();
         KalanChinaHat.initialize();
         KalanBlockHighlight.initialize();
