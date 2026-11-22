@@ -37,6 +37,17 @@ public final class KalanCustomSky {
         }
     }
 
+    public static void reloadFromConfig() {
+        KalanConfig config = KalanConfig.get();
+        enabled = config.isCustomSkyEnabled();
+        try {
+            preset = KalanSkyPreset.valueOf(config.getCustomSkyPreset());
+        } catch (IllegalArgumentException ignored) {
+            preset = KalanSkyPreset.DAY;
+        }
+        if (enabled) apply();
+    }
+
     public static boolean isEnabled() {
         return enabled;
     }
