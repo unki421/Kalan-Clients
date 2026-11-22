@@ -101,6 +101,10 @@ public final class KalanChinaHat {
         out.vertex(matrix, x3, y3, z3).color(r, g, b, a);
     }
 
+    public static void reloadFromConfig() {
+        enabled = KalanConfig.get().isChinaHatEnabled();
+    }
+
     public static boolean isEnabled() {
         return enabled;
     }
