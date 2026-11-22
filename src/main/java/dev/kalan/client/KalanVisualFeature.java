@@ -8,7 +8,8 @@ public enum KalanVisualFeature {
     JUMP_CIRCLE("Jump Circle", "Круг появляется под тобой при прыжке"),
     SNOW("Snow", "Снегопад и снежный покров на блоках"),
     CUSTOM_CROSSHAIR("Custom Crosshair", "Настраиваемый прицел для PvP"),
-    HIT_PARTICLES("Hit Particles", "Частицы при атаке цели");
+    HIT_PARTICLES("Hit Particles", "Частицы при атаке цели"),
+    TARGET_ESP("Target ESP", "Вращающиеся фигуры вокруг цели под прицелом");
 
     private final String title;
     private final String description;
@@ -31,6 +32,7 @@ public enum KalanVisualFeature {
             case SNOW -> KalanSnow.isEnabled();
             case CUSTOM_CROSSHAIR -> KalanCustomCrosshair.isEnabled();
             case HIT_PARTICLES -> KalanHitParticles.isEnabled();
+            case TARGET_ESP -> KalanTargetEsp.isEnabled();
         };
     }
 
@@ -44,6 +46,7 @@ public enum KalanVisualFeature {
             case SNOW -> KalanSnow.toggle();
             case CUSTOM_CROSSHAIR -> KalanCustomCrosshair.toggle();
             case HIT_PARTICLES -> KalanHitParticles.toggle();
+            case TARGET_ESP -> KalanTargetEsp.toggle();
         }
     }
 }
