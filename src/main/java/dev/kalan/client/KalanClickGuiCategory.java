@@ -3,7 +3,7 @@ package dev.kalan.client;
 public enum KalanClickGuiCategory {
 
     HUD("HUD", "Информационный интерфейс"),
-    COMBAT("Combat", "Боевые информационные элементы"),
+    COMBAT("PvP", "Прицел и элементы для PvP"),
     VISUALS("Visuals", "Косметические визуальные эффекты");
 
     private final String title;
