@@ -259,8 +259,10 @@ public final class KalanClickGuiScreen extends Screen {
         if (selected.getVisualFeature() != null) {
             if (selected.getVisualFeature() == KalanVisualFeature.CUSTOM_SKY) {
                 renderCustomSkySettings(c, x, bodyY, cw, bodyH);
-            } else {
+            } else if (selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
                 renderChinaHatSettings(c, x, bodyY, cw, bodyH);
+            } else {
+                renderBlockHighlightSettings(c, x, bodyY, cw, bodyH);
             }
             return;
         }
@@ -326,6 +328,20 @@ public final class KalanClickGuiScreen extends Screen {
 
         txt(c, "Шляпа отображается над игроками", x + 8, bodyY + 204, MUTED);
         txt(c, "ЛКМ по настройке — изменить значение", x + 8, bodyY + 222, MUTED);
+        txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
+    }
+
+    private void renderBlockHighlightSettings(DrawContext c, int x, int bodyY, int cw, int bodyH) {
+        int color = KalanConfig.get().getBlockHighlightColor();
+        txt(c, "‹", x + 8, bodyY + 14, ACCENT_LIGHT);
+        txt(c, "Block Highlight", x + 24, bodyY + 14, WHITE);
+        txt(c, "ПОДСВЕТКА БЛОКА ПОД ПРИЦЕЛОМ", x + 8, bodyY + 38, MUTED);
+        txt(c, "Цвет подсветки", x + 10, bodyY + 76, WHITE);
+        box(c, x + 10, bodyY + 100, cw - 20, 34, 8, color, CARD_BORDER_ACTIVE);
+        txt(c, "Сменить цвет", x + 10 + (cw - 20 - textW("Сменить цвет")) / 2,
+                bodyY + 112, WHITE);
+        txt(c, "Подсвечивает только выбранный блок", x + 10, bodyY + 158, MUTED);
+        txt(c, "ЛКМ — сменить цвет", x + 10, bodyY + 180, MUTED);
         txt(c, "ПКМ / ESC — назад", x + 8, bodyY + bodyH - 18, ACCENT_LIGHT);
     }
 
@@ -444,6 +460,13 @@ public final class KalanClickGuiScreen extends Screen {
                             KalanCustomSky.setPreset(presets[i]);
                             return true;
                         }
+                    }
+                } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.BLOCK_HIGHLIGHT) {
+                    int colorX = cx + 10;
+                    int colorY = bodyY + 100;
+                    if (KalanClickGuiLayout.contains((int) mx, (int) my, colorX, colorY, cw - 20, 34)) {
+                        KalanBlockHighlight.cycleColor();
+                        return true;
                     }
                 } else if (button == 0 && selected.getVisualFeature() == KalanVisualFeature.CHINA_HAT) {
                     KalanConfig config = KalanConfig.get();
