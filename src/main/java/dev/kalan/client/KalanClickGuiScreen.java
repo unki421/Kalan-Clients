@@ -402,7 +402,7 @@ public final class KalanClickGuiScreen extends Screen {
                 }
                 return true;
             }
-            if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30))
+            if (button == 1 || (button == 0 && mx < cx + 28 && my >= bodyY && my <= bodyY + 30)) {
                 selected = null;
                 return true;
             }
